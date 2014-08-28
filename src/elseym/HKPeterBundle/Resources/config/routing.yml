@@ -1,0 +1,3 @@
+elseym_hk_peter_homepage:
+    path:     /hello/{name}
+    defaults: { _controller: elseymHKPeterBundle:Default:index }

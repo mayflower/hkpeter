@@ -1,0 +1,17 @@
+parameters:
+  hkpeter.controller.hkp.class: elseym\HKPeterBundle\Controller\HKPController
+  hkpeter.controller.portal.class: elseym\HKPeterBundle\Controller\PortalController
+
+services:
+  hkpeter.controller.abstract:
+    abstract: true
+    calls:
+      - [ setKeyRepository, [ @hkpeter.key_repository.gnupg ] ]
+
+  hkpeter.controller.hkp:
+    class: %hkpeter.controller.hkp.class%
+    parent: hkpeter.controller.abstract
+
+  hkpeter.controller.portal:
+    class: %hkpeter.controller.portal.class%
+    parent: hkpeter.controller.abstract

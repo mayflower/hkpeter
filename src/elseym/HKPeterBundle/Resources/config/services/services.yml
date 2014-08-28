@@ -1,0 +1,9 @@
+parameters:
+  hkpeter.service.gnupg.class: elseym\HKPeterBundle\Service\GnupgService
+
+services:
+  hkpeter.service.gnupg:
+    class: %hkpeter.service.gnupg.class%
+    private: true
+    calls:
+      - [ setGnupgBin, [ %hkpeter.gnupg.bin% ] ]

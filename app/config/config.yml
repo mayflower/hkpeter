@@ -24,6 +24,10 @@ framework:
     fragments:       ~
     http_method_override: true
 
+elseym_hk_peter:
+  gnupg:
+    bin: /usr/bin/gpg
+
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"

@@ -1,0 +1,4 @@
+elseym_hk_peter:
+    resource: "@elseymHKPeterBundle/Resources/config/routing.yml"
+    prefix:   /
+

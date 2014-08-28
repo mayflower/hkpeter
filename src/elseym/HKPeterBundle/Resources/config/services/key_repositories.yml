@@ -1,0 +1,8 @@
+parameters:
+  hkpeter.key_repository.gnupg.class: elseym\HKPeterBundle\KeyRepository\GnupgKeyRepository
+
+services:
+  hkpeter.key_repository.gnupg:
+    class: %hkpeter.key_repository.gnupg.class%
+    calls:
+      - [ setGnupgService, [ @hkpeter.service.gnupg ] ]
