@@ -16,13 +16,17 @@ profile::database::postgresql: false
 profile::database::mongodb: false
 profile::database::redis: false
 
+profile::queue::rabbitmq: false
+
 profile::webserver::php: true
 profile::webserver::hhvm: false
 
 profile::javascript::nodejs: false
 profile::javascript::less: false
 
-profile::frontend::compass: true
+profile::frontend::compass: false
+profile::frontend::bower: false
+profile::frontend::grunt: false
 
 profile::app::symfony2: true
 profile::app::yii1: false
