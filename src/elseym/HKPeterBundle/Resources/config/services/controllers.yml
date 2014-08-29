@@ -15,3 +15,5 @@ services:
   hkpeter.controller.portal:
     class: %hkpeter.controller.portal.class%
     parent: hkpeter.controller.abstract
+    calls:
+      - [ setTemplating, [ @templating ] ]
