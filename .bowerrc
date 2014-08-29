@@ -1,0 +1,6 @@
+{
+    "analytics": false,
+    "directory": "web/static",
+    "interactive": false,
+    "production": true
+}

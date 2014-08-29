@@ -23,6 +23,8 @@ profile::javascript::nodejs: true
 profile::javascript::less: true
 
 profile::frontend::compass: false
+profile::frontend::bower: true
+profile::frontend::grunt: false
 
 profile::app::symfony2: true
 profile::app::yii1: false

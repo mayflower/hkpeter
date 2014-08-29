@@ -1,0 +1,10 @@
+{
+  "name": "hpketer",
+  "version": "1.0.0",
+  "description": "HKPeter Keyserver",
+  "dependencies": {
+    "jquery": "~2.1",
+    "bootstrap": "~3.2",
+    "fontawesome": "~4.2"
+  }
+}
