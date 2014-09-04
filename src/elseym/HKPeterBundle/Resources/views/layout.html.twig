@@ -1,6 +1,14 @@
 <html>
 <head>
     <title>HKPeter</title>
+    {% javascripts
+    "@bootstrap_js" %}
+    <script src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% stylesheets
+    "@bootstrap_css" %}
+    <link rel="stylesheet" href="{{ asset_url }}" />
+    {% endstylesheets %}
 </head>
 <body>
     <nav class="navbar navbar-default" role="navigation">
