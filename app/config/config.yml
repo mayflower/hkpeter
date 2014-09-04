@@ -28,6 +28,18 @@ elseym_hk_peter:
   gnupg:
     bin: /usr/bin/gpg
 
+sp_bower:
+  install_on_warmup: false
+  keep_bowerrc: false
+  assetic:
+    enabled: true
+    nest_dependencies: true
+  bundles:
+    elseymHKPeterBundle:
+      config_dir: Resources/config
+      asset_dir: ../static
+      cache: ../static/cache
+
 # Twig Configuration
 twig:
     debug:            "%kernel.debug%"
@@ -35,7 +47,7 @@ twig:
 
 # Assetic Configuration
 assetic:
-    debug:          "%kernel.debug%"
+    debug:          false
     use_controller: false
     bundles:        [ ]
     #java: /usr/bin/java
