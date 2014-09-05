@@ -7,7 +7,7 @@
     <title>{% block title %}HKPeter{% endblock %}</title>
 
     {% stylesheets "@bootstrap_css" "@fontawesome_css"
-        "@elseymHKPeterBundle/Resources/static/src/css/screen.css" %}
+        "@elseymHKPeterBundle/Resources/static/css/screen.css" %}
     <link rel="stylesheet" href="{{ asset_url }}"/>{% endstylesheets %}
     <!--[if lt IE 9]>
     <script src="//oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -21,8 +21,8 @@
     {% block content %}{% endblock %}
 </div>
 {% javascripts "@jquery_js" "@bootstrap_js"
-    "@elseymHKPeterBundle/Resources/static/vendor/jquery.tablesort/jquery.tablesort.min.js"
-    "@elseymHKPeterBundle/Resources/static/src/js/main.js"
+    "@elseymHKPeterBundle/Resources/vendor/jquery.tablesort/jquery.tablesort.min.js"
+    "@elseymHKPeterBundle/Resources/static/js/main.js"
 %}<script src="{{ asset_url }}"></script>{% endjavascripts %}
 </body>
 </html>
