@@ -1,8 +1,8 @@
 elseym_hkp_server:
     resource: "@elseymHKPServerBundle/Resources/config/routing.yml"
-    prefix:   /
+    prefix:   /pks
 
 elseym_hk_peter:
     resource: "@elseymHKPeterBundle/Resources/config/routing.yml"
-    prefix:   /pks/
+    prefix:   /
 
