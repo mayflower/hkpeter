@@ -1,5 +1,6 @@
 parameters:
   hkpeter.service.gnupg.class: elseym\HKPeterBundle\Service\GnupgService
+  hkpeter.service.word.class: elseym\HKPeterBundle\Service\WordService
 
 services:
   hkpeter.service.gnupg:
@@ -7,3 +8,7 @@ services:
     private: true
     calls:
       - [ setGnupgBin, [ %hkpeter.gnupg.bin% ] ]
+
+  hkpeter.service.word:
+    class: %hkpeter.service.word.class%
+    private: true

@@ -6,7 +6,7 @@ services:
   hkpeter.controller.abstract:
     abstract: true
     calls:
-      - [ setKeyRepository, [ @hkpeter.key_repository.gnupg ] ]
+      - [ setKeyRepository, [ @hkpeter.key_repository.random ] ]
 
   hkpeter.controller.hkp:
     class: %hkpeter.controller.hkp.class%
