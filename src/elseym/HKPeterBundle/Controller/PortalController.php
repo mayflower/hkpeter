@@ -2,6 +2,7 @@
 
 namespace elseym\HKPeterBundle\Controller;
 
+use elseym\HKPeterBundle\Model\Key;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,6 +35,13 @@ class PortalController extends AbstractController
     {
         $keys = $this->keyRepository->findBy(['fingerprint' => $fingerprint]);
         return $this->templating->renderResponse("elseymHKPeterBundle:portal:get.html.twig", ['key' => reset($keys)]);
+    }
+
+    public function fooAction(Request $request)
+    {
+        $keyString = "pub   2048R/E5C020D2 2013-02-14\nuid                  Simon Waibl <simon.waibl@mayflower.de>\nsub   2048R/3B4C66FF 2013-02-14\n";
+        $key = Key::createFromString($keyString);
+
     }
 
     /**
