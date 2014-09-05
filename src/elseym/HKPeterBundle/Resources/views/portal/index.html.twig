@@ -10,7 +10,7 @@
                 <th>#</th>
                 <th>email</th>
                 <th>fingerprint</th>
-                <th>actions</th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -20,9 +20,8 @@
                     <td>{{ key.email }}</td>
                     <td>{{ key.fingerprint }}</td>
                     <td data-sort-value="{{ key.id }}">
-                        <a href="{{ path("hp_portal_get", { "fingerprint": key.fingerprint }) }}">
-                            <button type="button" class="btn btn-primary btn-xs">download</button>
-                        </a>
+                        <a href="{{ path("hp_portal_get", { "fingerprint": key.fingerprint }) }}" class="btn btn-primary btn-xs">download</a>
+                        <a href="javascript:confirm('srsly?')" class="btn btn-danger btn-xs">remove</a>
                     </td>
                 </tr>
             {% endfor %}
