@@ -18,6 +18,7 @@ class AppKernel extends Kernel
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
             new elseym\HKPeterBundle\elseymHKPeterBundle(),
             new \Sp\BowerBundle\SpBowerBundle(),
+            new elseym\HKPServerBundle\elseymHKPServerBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

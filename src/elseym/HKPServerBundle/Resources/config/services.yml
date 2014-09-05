@@ -1,0 +1,7 @@
+parameters:
+#    elseym_hkp_server.example.class: elseym\HKPServerBundle\Example
+
+services:
+#    elseym_hkp_server.example:
+#        class: %elseym_hkp_server.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
