@@ -25,6 +25,7 @@ class elseymHKPeterExtension extends Extension
         $container->setParameter('hkpeter.gnupg.bin', $config['gnupg']['bin']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('parameters.yml');
         $loader->load('services/controllers.yml');
         $loader->load('services/key_repositories.yml');
         $loader->load('services/services.yml');

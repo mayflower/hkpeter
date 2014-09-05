@@ -1,6 +1,7 @@
 parameters:
   hkpeter.service.gnupg.class: elseym\HKPeterBundle\Service\GnupgService
   hkpeter.service.word.class: elseym\HKPeterBundle\Service\WordService
+  hkpeter.service.sp_bower_post_install.class: elseym\HKPeterBundle\Service\SpBowerPostInstallService
 
 services:
   hkpeter.service.gnupg:
@@ -12,3 +13,13 @@ services:
   hkpeter.service.word:
     class: %hkpeter.service.word.class%
     private: true
+
+  hkpeter.service.sp_bower_post_install:
+    class: %hkpeter.service.sp_bower_post_install.class%
+    calls:
+      - [ setFilesystem, [ @filesystem ] ]
+      - [ setOutputDirectory, [ %assetic.write_to% ] ]
+      - [ setAssets, [ %bower_assets% ] ]
+    tags:
+      - { name: kernel.event_listener, event: bower.post_install, method: copyAssets }
+      - { name: kernel.event_listener, event: bower.post_update, method: copyAssets }
