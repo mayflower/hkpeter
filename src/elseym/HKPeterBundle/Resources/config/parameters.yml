@@ -1,0 +1,11 @@
+parameters:
+  bower_assets:
+    fontawesome:
+      input: fontawesome/fonts/*
+      output: fonts
+    bootstrap_fonts:
+      input: bootstrap/dist/fonts/*
+      output: fonts
+    bootstrap_map:
+      input: bootstrap/dist/css/bootstrap.css.map
+      output: css
