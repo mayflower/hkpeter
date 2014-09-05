@@ -52,7 +52,7 @@ class SpBowerPostInstallService
      */
     public function setOutputDirectory($outputDirectory)
     {
-        $this->outputDirectory = realpath($outputDirectory);
+        $this->outputDirectory = $outputDirectory;
         return $this;
     }
 
