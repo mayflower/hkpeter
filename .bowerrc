@@ -1,6 +1,0 @@
-{
-    "analytics": false,
-    "directory": "src/elseym/HKPeterBundle/Resources/static",
-    "interactive": false,
-    "production": true
-}
