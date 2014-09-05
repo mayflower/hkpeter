@@ -5,7 +5,7 @@
 ## create a local_devstack.yaml and add it to .gitignore
 ## to override with personal settings (e.g. different IP)
 
-path: /var/www/hpketer
+path: /var/www/hkpeter
 vhost: hkpeter.dev
 ip: 192.168.74.92
 box_name: mayflower/trusty64-puppet3
