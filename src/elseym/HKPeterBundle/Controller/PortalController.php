@@ -21,7 +21,19 @@ class PortalController extends AbstractController
      */
     public function portalAction(Request $request)
     {
-        return $this->templating->renderResponse("elseymHKPeterBundle:portal:index.html.twig");
+        $keys = $this->keyRepository->findBy(['count' => $request->get('count', 42)]);
+        return $this->templating->renderResponse("elseymHKPeterBundle:portal:index.html.twig", ['keys' => $keys]);
+    }
+
+    /**
+     * @param Request $request
+     * @param $fingerprint
+     * @return Response
+     */
+    public function getAction(Request $request, $fingerprint)
+    {
+        $keys = $this->keyRepository->findBy(['fingerprint' => $fingerprint]);
+        return $this->templating->renderResponse("elseymHKPeterBundle:portal:get.html.twig", ['key' => reset($keys)]);
     }
 
     /**

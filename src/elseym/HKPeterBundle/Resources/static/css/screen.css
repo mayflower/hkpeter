@@ -1,0 +1,16 @@
+th {
+    cursor: pointer;
+}
+
+th:after {
+    font-size: x-small;
+    content: " ";
+}
+
+th.sorted.ascending:after {
+    content: " \261D";
+}
+
+th.sorted.descending:after {
+    content: " \261F";
+}

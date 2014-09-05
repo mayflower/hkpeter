@@ -1,3 +1,7 @@
 hp_portal:
   path: /
   defaults: { _controller: hkpeter.controller.portal:portalAction }
+
+hp_portal_get:
+  path: /get/{fingerprint}
+  defaults: { _controller: hkpeter.controller.portal:getAction }

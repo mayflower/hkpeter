@@ -5,6 +5,7 @@
   "dependencies": {
     "jquery": "~2.1",
     "bootstrap": "~3.2",
-    "fontawesome": "~4.2"
+    "fontawesome": "~4.2",
+    "jquery.tablesort": "https://github.com/kylefox/jquery-tablesort.git#master"
   }
 }
