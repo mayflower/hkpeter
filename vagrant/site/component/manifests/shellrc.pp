@@ -2,9 +2,10 @@ class component::shellrc (
   $aliases = {},
   $exports = {},
   $raw_lines = [],
+  $profile_path = '/home/vagrant/.profile',
 ) {
   concat { 'rcfile':
-    path  => '/home/vagrant/.profile',
+    path  => $profile_path,
     owner => 'vagrant',
     group => 'vagrant',
   }
