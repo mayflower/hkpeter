@@ -20,7 +20,15 @@ profile::app::symfony2: true
 
 component::symfony2::front_controller: app.php
 
+component::shellrc::aliases:
+  ls: ls -F --color=always
+  l: ls -la
 
+component::shellrc::exports:
+  TZ: Europe/Berlin
+
+component::shellrc::raw_lines:
+  - [[ $- == *i* ]] && www
 
 php::extensions:
   xdebug:
