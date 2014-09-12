@@ -22,7 +22,7 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-                ->arrayNode('gnupg')
+                ->arrayNode('gnupg_cli')
                     ->children()
                         ->scalarNode('bin')->isRequired()->end()
                     ->end()

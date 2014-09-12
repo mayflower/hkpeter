@@ -2,7 +2,7 @@
 
 namespace elseym\HKPeterBundle\KeyRepository;
 
-use elseym\HKPeterBundle\Service\GnupgService;
+use elseym\HKPeterBundle\Service\GnupgCliService;
 
 /**
  * Class GnupgRepository
@@ -10,11 +10,11 @@ use elseym\HKPeterBundle\Service\GnupgService;
  */
 class GnupgKeyRepository implements KeyRepositoryInterface
 {
-    /** @var GnupgService $gnupgService */
+    /** @var GnupgCliService $gnupgService */
     protected $gnupgService;
 
     /**
-     * @param GnupgService $gnupgService
+     * @param GnupgCliService $gnupgService
      * @return $this
      */
     public function setGnupgService($gnupgService)

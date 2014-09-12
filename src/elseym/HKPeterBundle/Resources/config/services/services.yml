@@ -1,14 +1,14 @@
 parameters:
-  hkpeter.service.gnupg.class: elseym\HKPeterBundle\Service\GnupgService
+  hkpeter.service.gnupg_cli.class: elseym\HKPeterBundle\Service\GnupgCliService
   hkpeter.service.word.class: elseym\HKPeterBundle\Service\WordService
   hkpeter.service.sp_bower_post_install.class: elseym\HKPeterBundle\Service\SpBowerPostInstallService
 
 services:
-  hkpeter.service.gnupg:
-    class: %hkpeter.service.gnupg.class%
+  hkpeter.service.gnupg_cli:
+    class: %hkpeter.service.gnupg_cli.class%
     private: true
     calls:
-      - [ setGnupgBin, [ %hkpeter.gnupg.bin% ] ]
+      - [ setGnupgBin, [ %hkpeter.gnupg_cli.bin% ] ]
 
   hkpeter.service.word:
     class: %hkpeter.service.word.class%

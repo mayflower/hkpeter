@@ -25,7 +25,7 @@ framework:
     http_method_override: true
 
 elseym_hk_peter:
-  gnupg:
+  gnupg_cli:
     bin: /usr/bin/gpg
 
 sp_bower:

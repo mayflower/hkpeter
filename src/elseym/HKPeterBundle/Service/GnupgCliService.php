@@ -5,10 +5,10 @@ namespace elseym\HKPeterBundle\Service;
 use elseym\HKPeterBundle\Exception\GnupgException;
 
 /**
- * Class GnupgService
+ * Class GnupgCliService
  * @package elseym\HKPeterBundle\Service
  */
-class GnupgService
+class GnupgCliService
 {
     /** @var string $gnupgBin */
     private $gnupgBin;

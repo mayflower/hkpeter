@@ -6,7 +6,7 @@ services:
   hkpeter.key_repository.gnupg:
     class: %hkpeter.key_repository.gnupg.class%
     calls:
-      - [ setGnupgService, [ @hkpeter.service.gnupg ] ]
+      - [ setGnupgService, [ @hkpeter.service.gnupg_cli ] ]
 
   hkpeter.key_repository.random:
     class: %hkpeter.key_repository.random.class%
