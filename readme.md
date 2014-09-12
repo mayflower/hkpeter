@@ -3,7 +3,7 @@
 
 ## installation
 - `git clone` this repo
-- `./vagrant/bootstrap.sh` for the first run
+- `./vagrant/bootstrap.sh` but don't overwrite anything
 - `vagrant up` the box (see [Mayflower/wasted](https://github.com/mayflower/wasted) for more info.)
 - `vagrant ssh` into the box
-- `composer install` the dependencies
+- `cd /var/www/hkpeter && composer install` the dependencies
