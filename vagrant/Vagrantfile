@@ -14,19 +14,23 @@ if Vagrant.has_plugin?('vagrant-vbguest')
   end
 end
 
-configfn   = Dir.glob('*/devstack.yaml', File::FNM_DOTMATCH)[0]
-if not configfn
-  abort 'Run vagrant/bootstrap.sh before running vagrant! (no devstack.yaml exists)'
+cnf = {}
+
+configdir = Dir.glob('*/vagrant-cfg', File::FNM_DOTMATCH)[0]
+
+if not configdir
+  abort 'Run vagrant/bootstrap.sh before running vagrant! (vagrant-cfg does not exit)'
 end
 
-basedir    = File.absolute_path(File.dirname(configfn))
-vagrantdir = File.absolute_path(File.dirname(configfn) == '..' ? '.' : 'vagrant')
-cnf        = YAML::load(File.open(configfn))
+basedir    = File.absolute_path(File.dirname(configdir))
+vagrantdir = File.absolute_path(File.dirname(configdir) == '..' ? '.' : 'vagrant')
 
-local_configfn = Dir.glob('*/local_devstack.yaml', File::FNM_DOTMATCH)[0]
-if local_configfn
-  local_cnf      = YAML::load(File.open(local_configfn))
-  cnf = cnf.merge(local_cnf)
+configs = [['common.yaml'], ['dev', 'common.yaml'], ['local', 'common.yaml']]
+configs.each do |config|
+  configfn = File.join(configdir, *config)
+  if File.exist?(configfn)
+    cnf = cnf.merge(YAML::load(File.open(configfn)))
+  end
 end
 
 Vagrant.configure("2") do |config|
@@ -38,7 +42,10 @@ Vagrant.configure("2") do |config|
     config.hostmanager.enabled = true
     config.hostmanager.manage_host = true
     config.hostmanager.include_offline = true
-    config.hostmanager.aliases = "hhvm.#{cnf['vhost']}"
+    if cnf['vhost_aliases'].nil?
+      cnf['vhost_aliases'] = ["hhvm.#{cnf['vhost']}"]
+    end
+    config.hostmanager.aliases = cnf['vhost_aliases']
   end
 
   if Vagrant.has_plugin?('vagrant-vbguest')
@@ -52,11 +59,27 @@ Vagrant.configure("2") do |config|
 
   # Use vagrant-cachier if installed
   if Vagrant.has_plugin?('vagrant-cachier')
+    config.cache.scope = :box
     config.cache.auto_detect = true
   end
 
+  # If vagrant-proxyconf is installed and proxy is configured set this proxy.
+  if Vagrant.has_plugin?('vagrant-proxyconf') && cnf.has_key?('proxy') && cnf.has_key?('no-proxy')
+    if !cnf['proxy'].nil? && !cnf['proxy'].empty?
+      config.proxy.http = cnf['proxy']
+      config.proxy.https = cnf['proxy']
+      if !cnf['no-proxy'].nil? && !cnf['no-proxy'].empty?
+        config.proxy.no_proxy = cnf['no-proxy']
+      end
+    end
+  end
+
   # Install r10k using the shell provisioner and download the Puppet modules
-  config.vm.provision :shell, :path => File.join(vagrantdir, 'puppet-bootstrap.sh')
+  config.vm.provision :puppet do |puppet|
+    puppet.manifests_path = File.join(vagrantdir, 'manifests')
+    puppet.manifest_file  = 'bootstrap.pp'
+    puppet.options        = ['--verbose']
+  end
 
   config.vm.synced_folder "#{basedir}/", cnf['path'], :nfs => cnf['nfs']
   config.vm.network :private_network, :ip => cnf['ip']
@@ -66,7 +89,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision :hostmanager if Vagrant.has_plugin?('vagrant-hostmanager')
   config.vm.provision :puppet do |puppet|
     puppet.manifests_path    = File.join(vagrantdir, 'manifests')
-    puppet.manifest_file     = 'ubuntu_devstack.pp'
+    puppet.manifest_file     = 'site.pp'
     puppet.module_path       = ['modules', 'site'].map { |dir| File.join(vagrantdir, dir) }
     puppet.options           = ["--graphdir=/vagrant/vagrant/graphs --graph --environment dev"] if not ENV["VAGRANT_PUPPET_DEBUG"]
     puppet.options           = ["--debug --graphdir=/vagrant/vagrant/graphs --graph --environment dev"] if ENV["VAGRANT_PUPPET_DEBUG"]
