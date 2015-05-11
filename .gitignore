@@ -1,11 +1,5 @@
-# Vagrant & puppet stuff
-
 .vagrant
 /modules/*
+/modules/.r10k_stamp
 /graphs/*
-
-/config/config
-
-# IDE & OS stuff
-/.idea/*
-.DS_Store
+/vendor/*

@@ -14,10 +14,10 @@ class component::postgresql (
     } ->
   anchor { 'component::postgresql::end': }
 
+  contain '::postgresql::client'
+
   if $postgis {
-    Anchor['component::postgresql::begin'] ->
-    class { '::postgresql::server::postgis': } ->
-    Anchor['component::postgresql::end']
+    contain '::postgresql::server::postgis'
   }
 
   ensure_resource('package', $extensions, {

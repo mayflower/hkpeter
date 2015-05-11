@@ -26,7 +26,7 @@ Check out the [Setup](#setup) section of this document for instructions. If you 
 ### Adding WASTED to your project
 Switch to the root of your existing git repository and execute the following commands:
 ```
-git subtree add --prefix vagrant https://github.com/Mayflower/wasted.git master
+git subtree add --prefix vagrant https://github.com/Mayflower/wasted.git master --squash
 ./vagrant/bootstrap.sh
 ```
 This requires that there is no existing `vagrant` directory.
@@ -46,7 +46,7 @@ different IP or box name.
 ### Updating
 To update the devstack use (from the root of your git repository):
 ```
-git subtree pull --prefix vagrant https://github.com/Mayflower/wasted.git master
+git subtree pull --prefix vagrant https://github.com/Mayflower/wasted.git master --squash
 ```
 
 ## Usage
@@ -55,8 +55,11 @@ r10k will first bootstrap your local Puppet modules and after that the provision
 This might not work if you are using non-Virtualbox providers.
 
 ### Additional information for windows users
- * You have to run `vagrant up` from the vagrant subdirectory
- * You have to edit your `C:\Windows\System32\drivers\etc\hosts` file manually
+ * For all Users of Windows NT based Systems (Windows 2000, Vista, 7 and 8) with using NTFS Filesystem (is the default)
+   * You can use the `vagrant\bootstrap.cmd` to work in the same way that is described in the *Adding WASTED to your project* section.
+ * All other Window Users:
+   * You have to run `vagrant up` from the vagrant subdirectory
+   * You have to edit your `C:\Windows\System32\drivers\etc\hosts` file manually
 
 ## Notes
 ### Recommended Plugins
@@ -84,6 +87,14 @@ mkdir dummy_project && cd dummy_project && git init
 touch dummy_file && git add dummy_file && git commit dummy_file -m "Initial commit"
 ```
 Your dummy repository is now ready for use with WASTED. Just follow the instruction from the [Setup](#setup) section.
+
+### Requirements for vagrant boxes
+WASTED requires Puppet >= 3.7.0 to work correctly, which is included in the default boxes.
+Otherwise it will fail with a cryptic error due to a bug in `contain` on fully qualified class names:
+```
+Error: undefined method 'ref' for nil:NilClass
+```
+In case you stab your toe on this using the `mayflower/trusty64-puppet3` box run `vagrant box update`
 
 ## Contributing
 For development of WASTED create a staging directory and clone the WASTED repository directly into the `vagrant` directory.
