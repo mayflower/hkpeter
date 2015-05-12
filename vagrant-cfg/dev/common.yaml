@@ -1,0 +1,26 @@
+---
+
+env: dev
+
+# fixes permission errors
+php::fpm::config::user: vagrant
+php::fpm::config::group: users
+
+# fixes bugs with vboxfs
+nginx::config::sendfile: 'off'
+nginx::config::vhost_purge: true
+
+# skip the waiting...
+apt::always_apt_update: false
+
+# adds some convenience for `vagrant ssh`
+component::shellrc::exports:
+  DOCROOT: /var/www/hkpeter
+
+component::shellrc::aliases:
+  www: 'cd \${DOCROOT}'
+  ls: ls -F --color=always
+  l: ls -la
+
+component::shellrc::raw_lines:
+  - '[[ $- == *i* ]] && www'

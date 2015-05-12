@@ -1,0 +1,29 @@
+---
+
+path: /var/www/hkpeter
+vhost: hkpeter.dev
+box_name: mayflower/trusty64-puppet3
+ip: 192.168.74.92
+
+profile::database::mysql: false
+profile::database::redis: true
+profile::webserver::php: true
+profile::javascript::nodejs: true
+profile::frontend::bower: true
+profile::frontend::coffee_script: true
+profile::frontend::grunt: true
+profile::app::symfony2: true
+
+component::symfony2::front_controller: app.php
+
+php::extensions:
+  curl: {}
+  json: {}
+  intl: {}
+  xdebug:
+    settings:
+      xdebug.remote_connect_back: On
+      xdebug.overload_var_dump: 0
+
+php::settings:
+  Date/date.timezone: Europe/Berlin
