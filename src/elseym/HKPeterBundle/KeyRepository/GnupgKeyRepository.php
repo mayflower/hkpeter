@@ -35,6 +35,23 @@ class GnupgKeyRepository implements KeyRepositoryInterface
      */
     public function add($armoredKey)
     {
-        // TODO: Implement add() method.
+        $keyMatches = [];
+        $gpgresult = $this->gnupgService->import($armoredKey);
+
+        $regex = '/^gpg:\s+key\s+(?<keyId>[0-9a-f]{8}):\s+"(?<userId>[^"]+?)"\s+(?<result>.+)$/i';
+        if (0 >= preg_match_all($regex, $gpgresult, $keyMatches)) {
+            throw new \RuntimeException("no keys found!");
+        }
+
+        $regex = '/gpg: Total number processed: (?<count>\d+)/i';
+        if (0 >= preg_match_all($regex, $gpgresult, $sumMatches)) {
+            throw new \RuntimeException("gpg returned something weird!");
+        }
+
+        if (count($keyMatches) != $sumMatches[0]["count"]) {
+            throw new \RuntimeException("inconsistent data!");
+        }
+
+        // do more stuff!
     }
 }
