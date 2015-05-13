@@ -4,6 +4,7 @@ namespace elseym\HKPeterBundle\Controller;
 
 use elseym\HKPeterBundle\Model\Key;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -52,5 +53,22 @@ class PortalController extends AbstractController
     {
         $this->templating = $templating;
         return $this;
+    }
+
+    public function addAction(Request $request)
+    {
+        $armoredKey = $request->request->get('armoredKey', null);
+        if (null !== $armoredKey) {
+            $key = $this->keyRepository->add($armoredKey);
+            if ($key instanceof Key) {
+                //TODO: add success to flashbag
+            } else {
+                //TODO: add error to flashbag
+            }
+        } else {
+            //TODO: add error to flashbag
+        }
+
+        return new RedirectResponse($this->router->generate('hp_portal'));
     }
 }
