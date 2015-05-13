@@ -6,6 +6,7 @@ services:
   hkpeter.controller.abstract:
     abstract: true
     calls:
+      - [ setRouter,  [ @router ] ]
       - [ setKeyRepository, [ @hkpeter.key_repository.random ] ]
 
   hkpeter.controller.hkp:
