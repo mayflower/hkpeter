@@ -3,12 +3,14 @@
 namespace elseym\HKPeterBundle\Service;
 
 use elseym\HKPeterBundle\Exception\GnupgException;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 /**
  * Class GnupgCliService
  * @package elseym\HKPeterBundle\Service
  */
-class GnupgCliService
+class GnupgCliService implements GnupgServiceInterface
 {
     /** @var string $gnupgBin */
     private $gnupgBin;
@@ -27,48 +29,40 @@ class GnupgCliService
     }
 
     /**
-     * @param $name
-     * @param null $default
-     * @return null
+     * @param string $armoredKey
+     * @return string[]
      */
-    public function getGnupgArg($name, $default = null)
+    public function import($armoredKey)
     {
-        if ($this->hasGnupgArg($name)) {
-            return $this->gnupgArgs[$name];
+        $command = $this->gnupgBin . ' ' . $this->gnupgArgs . ' --import';
+        $proc = new Process($command, null, [], $armoredKey);
+        try {
+            $proc->mustRun();
+        } catch (ProcessFailedException $e) {
+            throw $e;
         }
-        return $default;
+        $output = $proc->getErrorOutput();
+        //'/^gpg:\s+key\s+(?<id>[0-9a-f]{8}):\s+"(?<user>[^"]+?)"\s+(?<result>.+)$/i'
+        //'/gpg: Total number processed: (?<count>\d+)/i'
+
+        /*
+         *
+        gpg: key FD204126: "Marcel Idler <marcel.idler@mayflower.de>" not changed
+        gpg: key A7F02194: "Marco Jantke (Work) <marco.jantke@mayflower.de>" not changed
+        gpg: key 50E8118F: "Jonas Ernst <jonas.ernst@me.com>" not changed
+        gpg: Total number processed: 3
+        gpg:              unchanged: 3
+         */
+
     }
 
     /**
-     * @param $name
-     * @return bool
+     * @param string $fingerprint
+     * @return string[]
      */
-    public function hasGnupgArg($name)
+    public function listKeys($fingerprint)
     {
-        return isset($this->gnupgArgs[$name]);
-    }
 
-    /**
-     * @param $name
-     * @param $value
-     * @return $this
-     */
-    public function setGnupgArg($name, $value)
-    {
-        $this->gnupgArgs[$name] = $value;
-        return $this;
-    }
-
-    /**
-     * @param $name
-     * @return $this
-     */
-    public function unsetGnupgArg($name)
-    {
-        if ($this->hasGnupgArg($name)) {
-            unset($this->gnupgArgs[$name]);
-        }
-        return $this;
     }
 
     /**
@@ -76,7 +70,7 @@ class GnupgCliService
      * @param $args
      * @return bool
      */
-    public function execute($command, $args)
+    private function execute($command, $args)
     {
         $gnupgArgs = $this->buildArgsString($args);
         $gnupgCmd = $this->gnupgBin . ' ' . $gnupgArgs . ' ' . $command;
@@ -90,37 +84,6 @@ class GnupgCliService
         }
 
         return $output;
-    }
-
-    /**
-     * @param array $moreArgs
-     * @return string
-     */
-    private function buildArgsString($moreArgs = [])
-    {
-        $gnupgArgs = $this->getGnupgArgs();
-        $gnupgArgs = array_merge($gnupgArgs, $moreArgs);
-
-        $arguments = [];
-
-        foreach ($gnupgArgs as $name => $value) {
-            if (strlen($name) === 1) {
-                $name = '-' . $name;
-            } elseif (strlen($name) > 1) {
-                $name = '--' . $name;
-            }
-            $arguments[] = trim($name . ' ' . escapeshellarg($value));
-        }
-
-        return implode(' ', $arguments);
-    }
-
-    /**
-     * @return array
-     */
-    public function getGnupgArgs()
-    {
-        return $this->gnupgArgs;
     }
 
     /**
