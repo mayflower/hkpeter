@@ -2,6 +2,8 @@
 
 namespace elseym\HKPeterBundle\KeyRepository;
 
+use elseym\HKPeterBundle\Exception\GnupgException;
+use elseym\HKPeterBundle\Exception\KeyRepositoryException;
 use elseym\HKPeterBundle\Model\Key;
 use elseym\HKPeterBundle\Service\WordService;
 
@@ -42,6 +44,15 @@ class RandomKeyRepository implements KeyRepositoryInterface
         }
 
         return $keys;
+    }
+
+    /**
+     * @param string $armoredKey
+     * @return Key
+     */
+    public function add($armoredKey)
+    {
+        throw new KeyRepositoryException('cannot add key to random key repository');
     }
 
     /**

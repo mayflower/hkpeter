@@ -6,7 +6,7 @@ namespace elseym\HKPeterBundle\Exception;
  * Class GnupgException
  * @package elseym\HKPeterBundle\Exception
  */
-class GnupgException extends \LogicException
+class GnupgException extends \RuntimeException
 {
     /** @var string $command */
     private $command;

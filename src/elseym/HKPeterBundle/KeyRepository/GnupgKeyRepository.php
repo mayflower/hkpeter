@@ -2,7 +2,8 @@
 
 namespace elseym\HKPeterBundle\KeyRepository;
 
-use elseym\HKPeterBundle\Service\GnupgCliService;
+use elseym\HKPeterBundle\Model\Key;
+use elseym\HKPeterBundle\Service\GnupgServiceInterface;
 
 /**
  * Class GnupgRepository
@@ -10,14 +11,14 @@ use elseym\HKPeterBundle\Service\GnupgCliService;
  */
 class GnupgKeyRepository implements KeyRepositoryInterface
 {
-    /** @var GnupgCliService $gnupgService */
+    /** @var GnupgServiceInterface $gnupgService */
     protected $gnupgService;
 
     /**
-     * @param GnupgCliService $gnupgService
+     * @param GnupgServiceInterface $gnupgService
      * @return $this
      */
-    public function setGnupgService($gnupgService)
+    public function setGnupgService(GnupgServiceInterface $gnupgService)
     {
         $this->gnupgService = $gnupgService;
         return $this;
@@ -26,5 +27,14 @@ class GnupgKeyRepository implements KeyRepositoryInterface
     public function findBy(array $predicates = [], $mode = self::FIND_PREDICATE_ALL)
     {
         // TODO: Implement findBy() method.
+    }
+
+    /**
+     * @param string $armoredKey
+     * @return Key
+     */
+    public function add($armoredKey)
+    {
+        // TODO: Implement add() method.
     }
 }
