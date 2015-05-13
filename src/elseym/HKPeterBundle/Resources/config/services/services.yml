@@ -9,6 +9,7 @@ services:
     private: true
     calls:
       - [ setGnupgBin, [ %hkpeter.gnupg_cli.bin% ] ]
+      - [ setGnupgHomedir, [ %hkpeter.gnupg_cli.homedir% ] ]
       - [ setGnupgArgs, [ %hkpeter.gnupg_cli.args% ] ]
 
   hkpeter.service.word:

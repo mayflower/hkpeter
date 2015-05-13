@@ -27,7 +27,8 @@ framework:
 elseym_hk_peter:
   gnupg_cli:
     bin: /usr/bin/gpg
-    args: --homedir /tmp/.gpg --no-random-seed-file --no-options --no-default-keyring --preserve-permissions --armor
+    homedir: /tmp/.gpg
+    args: --no-random-seed-file --no-options --no-default-keyring --preserve-permissions --armor
 
 sp_bower:
   install_on_warmup: false

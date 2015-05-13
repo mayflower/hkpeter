@@ -25,6 +25,7 @@ class Configuration implements ConfigurationInterface
                 ->arrayNode('gnupg_cli')
                     ->children()
                         ->scalarNode('bin')->isRequired()->end()
+                        ->scalarNode('homedir')->isRequired()->end()
                         ->scalarNode('args')->end()
                     ->end()
                 ->end()
