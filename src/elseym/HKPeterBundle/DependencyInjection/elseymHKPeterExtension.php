@@ -23,6 +23,7 @@ class elseymHKPeterExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $container->setParameter('hkpeter.gnupg_cli.bin', $config['gnupg_cli']['bin']);
+        $container->setParameter('hkpeter.gnupg_cli.args', $config['gnupg_cli']['args']);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('parameters.yml');
