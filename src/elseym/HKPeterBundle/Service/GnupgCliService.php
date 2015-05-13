@@ -2,7 +2,7 @@
 
 namespace elseym\HKPeterBundle\Service;
 
-use elseym\HKPeterBundle\Exception\GnupgException;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -15,8 +15,80 @@ class GnupgCliService implements GnupgServiceInterface
     /** @var string $gnupgBin */
     private $gnupgBin;
 
+    /** @var string $gnupgHomeDir */
+    private $gnupgHomeDir;
+
     /** @var array $gnupgArgs */
     private $gnupgArgs = [];
+
+    /** @var bool $implicitPurge */
+    private $implicitPurge = true;
+
+    /**
+     * @param bool $implicitPurge
+     */
+    function __construct($implicitPurge = true)
+    {
+        $this->implicitPurge = $implicitPurge;
+    }
+
+    /**
+     * @param string $armoredKey
+     * @return string
+     */
+    public function import($armoredKey)
+    {
+        return $this
+            ->execute("--import", $armoredKey)
+            ->getErrorOutput();
+    }
+
+    /**
+     * @param string $fingerprint
+     * @return string
+     */
+    public function listKeys($fingerprint)
+    {
+        return $this
+            ->execute("--list-keys " . escapeshellarg($fingerprint))
+            ->getOutput();
+    }
+
+    /**
+     * removes gpg databases from gpg homedir
+     *
+     * @return void
+     */
+    public function purge()
+    {
+        $gpgFiles = (new Finder())->files()->in($this->gnupgHomeDir)->name("*.gpg*");
+        foreach ($gpgFiles as $pgpFile) {
+            unlink($pgpFile->getPathname());
+        }
+    }
+
+    /**
+     * @param string $args
+     * @param string $input
+     * @return Process
+     * @throws ProcessFailedException
+     */
+    private function execute($args = "", $input = null)
+    {
+        $proc = new Process(
+            join(" ", [$this->gnupgBin, $this->gnupgArgs, $args])
+        );
+
+        if (null !== $input) {
+            $proc->setInput($input);
+        }
+
+        try {
+            return $proc->mustRun();
+        } catch (ProcessFailedException $e) {
+            throw $e;
+        }
+    }
 
     /**
      * @param string $gnupgBin
@@ -29,61 +101,18 @@ class GnupgCliService implements GnupgServiceInterface
     }
 
     /**
-     * @param string $armoredKey
-     * @return string[]
+     * @param $gnupgHomeDir
+     * @return $this
      */
-    public function import($armoredKey)
+    public function setGnupgHomedir($gnupgHomeDir)
     {
-        $command = $this->gnupgBin . ' ' . $this->gnupgArgs . ' --import';
-        $proc = new Process($command, null, [], $armoredKey);
-        try {
-            $proc->mustRun();
-        } catch (ProcessFailedException $e) {
-            throw $e;
-        }
-        $output = $proc->getErrorOutput();
-        //'/^gpg:\s+key\s+(?<id>[0-9a-f]{8}):\s+"(?<user>[^"]+?)"\s+(?<result>.+)$/i'
-        //'/gpg: Total number processed: (?<count>\d+)/i'
-
-        /*
-         *
-        gpg: key FD204126: "Marcel Idler <marcel.idler@mayflower.de>" not changed
-        gpg: key A7F02194: "Marco Jantke (Work) <marco.jantke@mayflower.de>" not changed
-        gpg: key 50E8118F: "Jonas Ernst <jonas.ernst@me.com>" not changed
-        gpg: Total number processed: 3
-        gpg:              unchanged: 3
-         */
-
-    }
-
-    /**
-     * @param string $fingerprint
-     * @return string[]
-     */
-    public function listKeys($fingerprint)
-    {
-
-    }
-
-    /**
-     * @param $command
-     * @param $args
-     * @return bool
-     */
-    private function execute($command, $args)
-    {
-        $gnupgArgs = $this->buildArgsString($args);
-        $gnupgCmd = $this->gnupgBin . ' ' . $gnupgArgs . ' ' . $command;
-
-        $exitCode = 0;
-        $output = [];
-        $out = exec($gnupgCmd, $output, $exitCode);
-
-        if (0 !== $exitCode) {
-            throw new GnupgException($gnupgCmd, $exitCode, $output, $out);
+        $homedir = realpath($gnupgHomeDir);
+        if (false === $homedir || !is_dir($homedir)) {
+            throw new \LogicException("'$homedir' ('$gnupgHomeDir') is not a directory!");
         }
 
-        return $output;
+        $this->gnupgHomeDir = $homedir;
+        return $this;
     }
 
     /**
