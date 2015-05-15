@@ -1,5 +1,7 @@
 <?php
 
+namespace elseym\HKPeterBundle\Form\Type;
+
 /**
  * Class AddKeyType
  */

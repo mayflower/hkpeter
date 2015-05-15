@@ -27,7 +27,7 @@ services:
       - { name: kernel.event_listener, event: bower.post_update, method: copyAssets }
 
 #form services
-hkpeter.form.add_key:
-	class: AddKeyType
-	tags:
-		- { name: form.type, alias: add_key }
+  hkpeter.form.add_key:
+    class: elseym\HKPeterBundle\Form\Type\AddKeyType
+    tags:
+      - { name: form.type, alias: add_key }

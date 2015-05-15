@@ -18,3 +18,5 @@ services:
     parent: hkpeter.controller.abstract
     calls:
       - [ setTemplating, [ @templating ] ]
+      - [ setFormFactory, [ @form.factory ] ]
+      - [ setSession, [ @session ] ]
