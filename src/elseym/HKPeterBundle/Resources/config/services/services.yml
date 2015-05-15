@@ -2,6 +2,8 @@ parameters:
   hkpeter.service.gnupg_cli.class: elseym\HKPeterBundle\Service\GnupgCliService
   hkpeter.service.word.class: elseym\HKPeterBundle\Service\WordService
   hkpeter.service.sp_bower_post_install.class: elseym\HKPeterBundle\Service\SpBowerPostInstallService
+  hkpeter.service.pgpdump_cli.class: elseym\HKPeterBundle\Service\PgpdumpCliService
+  hkpeter.form.add_key.class: elseym\HKPeterBundle\Form\Type\AddKeyType
 
 services:
   hkpeter.service.gnupg_cli:
@@ -11,6 +13,11 @@ services:
       - [ setGnupgBin, [ %hkpeter.gnupg_cli.bin% ] ]
       - [ setGnupgHomedir, [ %hkpeter.gnupg_cli.homedir% ] ]
       - [ setGnupgArgs, [ %hkpeter.gnupg_cli.args% ] ]
+
+  hkpeter.service.pgpdump_cli:
+    class: %hkpeter.service.pgpdump_cli.class%
+    calls:
+      - [ setPgpdumpBin, [ %hkpeter.pgpdump_cli.bin% ] ]
 
   hkpeter.service.word:
     class: %hkpeter.service.word.class%
@@ -26,8 +33,8 @@ services:
       - { name: kernel.event_listener, event: bower.post_install, method: copyAssets }
       - { name: kernel.event_listener, event: bower.post_update, method: copyAssets }
 
-#form services
+  #form services
   hkpeter.form.add_key:
-    class: elseym\HKPeterBundle\Form\Type\AddKeyType
+    class: %hkpeter.form.add_key.class%
     tags:
       - { name: form.type, alias: add_key }

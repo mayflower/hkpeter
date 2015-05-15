@@ -29,6 +29,11 @@ class Configuration implements ConfigurationInterface
                         ->scalarNode('args')->end()
                     ->end()
                 ->end()
+                ->arrayNode('pgpdump_cli')
+                    ->children()
+                        ->scalarNode('bin')->isRequired()->end()
+                    ->end()
+                ->end()
             ->end();
 
         return $treeBuilder;

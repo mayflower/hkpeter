@@ -29,6 +29,8 @@ elseym_hk_peter:
     bin: /usr/bin/gpg
     homedir: /tmp/.gpg
     args: --no-random-seed-file --no-options --no-default-keyring --preserve-permissions --armor
+  pgpdump_cli:
+    bin: /usr/bin/pgpdump
 
 sp_bower:
   install_on_warmup: false
