@@ -1,4 +1,11 @@
 {% extends "elseymHKPeterBundle::layout.html.twig" %}
 {% block content %}
-    {{ form(form) }}
+    {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_label(form.armoredKey) }}
+            {{ form_widget(form.armoredKey, {'attr':{'class':'form-control', 'rows':15}}) }}
+        </div>
+        {{ form_row(form._token) }}
+        {{ form_row(form.save, {'attr':{'class':'btn btn-primary'}}) }}
+    {{ form_end(form) }}
 {% endblock %}
