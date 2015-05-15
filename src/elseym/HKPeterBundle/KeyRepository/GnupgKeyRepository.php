@@ -14,15 +14,6 @@ class GnupgKeyRepository implements KeyRepositoryInterface
     /** @var GnupgServiceInterface $gnupgService */
     protected $gnupgService;
 
-    /**
-     * @param GnupgServiceInterface $gnupgService
-     * @return $this
-     */
-    public function setGnupgService(GnupgServiceInterface $gnupgService)
-    {
-        $this->gnupgService = $gnupgService;
-        return $this;
-    }
 
     public function findBy(array $predicates = [], $mode = self::FIND_PREDICATE_ALL)
     {
@@ -31,15 +22,15 @@ class GnupgKeyRepository implements KeyRepositoryInterface
 
     /**
      * @param string $armoredKey
-     * @return Key
+     * @return Key[]
      */
     public function add($armoredKey)
     {
         $keyMatches = [];
         $gpgresult = $this->gnupgService->import($armoredKey);
 
-        $regex = '/^gpg:\s+key\s+(?<keyId>[0-9a-f]{8}):\s+"(?<userId>[^"]+?)"\s+(?<result>.+)$/i';
-        if (0 >= preg_match_all($regex, $gpgresult, $keyMatches)) {
+        $regex = '/^gpg:\s+key\s+(?<keyId>[0-9a-f]{8}):\s+"(?<userId>[^"]+?)"\s+(?<result>.+)$/im';
+        if (0 >= preg_match_all($regex, $gpgresult, $keyMatches, PREG_SET_ORDER)) {
             throw new \RuntimeException("no keys found!");
         }
 
@@ -48,10 +39,28 @@ class GnupgKeyRepository implements KeyRepositoryInterface
             throw new \RuntimeException("gpg returned something weird!");
         }
 
-        if (count($keyMatches) != $sumMatches[0]["count"]) {
+        if (count($keyMatches) != $sumMatches["count"][0]) {
             throw new \RuntimeException("inconsistent data!");
         }
 
-        // do more stuff!
+        $result = [];
+        foreach ($keyMatches as $keyMatch) {
+            //keyId, userId, result
+
+            $keyDetails = $this->gnupgService->listKeys($keyMatch['keyId']);
+            $result[] = Key::createFromString($keyDetails);
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param GnupgServiceInterface $gnupgService
+     * @return $this
+     */
+    public function setGnupgService(GnupgServiceInterface $gnupgService)
+    {
+        $this->gnupgService = $gnupgService;
+        return $this;
     }
 }

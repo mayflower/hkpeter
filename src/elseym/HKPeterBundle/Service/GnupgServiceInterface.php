@@ -15,8 +15,8 @@ interface GnupgServiceInterface
     public function import($armoredKey);
 
     /**
-     * @param string $fingerprint
+     * @param string $keyId
      * @return string[]
      */
-    public function listKeys($fingerprint);
+    public function listKeys($keyId);
 }

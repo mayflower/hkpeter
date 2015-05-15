@@ -48,7 +48,7 @@ class RandomKeyRepository implements KeyRepositoryInterface
 
     /**
      * @param string $armoredKey
-     * @return Key
+     * @return Key[]
      */
     public function add($armoredKey)
     {

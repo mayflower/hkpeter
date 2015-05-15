@@ -44,14 +44,24 @@ class GnupgCliService implements GnupgServiceInterface
     }
 
     /**
-     * @param string $fingerprint
+     * @param string $keyId
      * @return string
      */
-    public function listKeys($fingerprint)
+    public function listKeys($keyId)
     {
+        /*
+         * The double --with-fingerprint prints the fingerprint for the subkeys
+         * too. --fixed-list-mode is the modern listing way printing dates in
+         * seconds since Epoch and does not merge the first userID with the pub
+         * record; gpg2 does this by default and the option is a dummy.
+         */
         return $this
-            ->execute("--list-keys " . escapeshellarg($fingerprint))
-            ->getOutput();
+            ->execute(
+                "--list-keys --with-colons --with-fingerprint --with-fingerprint --fixed-list-mode " .
+                escapeshellarg($keyId)
+            )
+            ->getOutput()
+        ;
     }
 
     /**

@@ -22,7 +22,7 @@ interface KeyRepositoryInterface
 
     /**
      * @param string $armoredKey
-     * @return Key
+     * @return Key[]
      */
     public function add($armoredKey);
 }
