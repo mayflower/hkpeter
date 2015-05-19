@@ -9,6 +9,8 @@ php::fpm::config::group: users
 # fixes bugs with vboxfs
 nginx::config::sendfile: 'off'
 nginx::config::vhost_purge: true
+nginx::config::http_cfg_append:
+  fastcgi_read_timeout: 6000s
 
 # skip the waiting...
 apt::always_apt_update: false
@@ -31,3 +33,6 @@ php::extensions:
       xdebug.remote_connect_back: On
       xdebug.overload_var_dump: 0
       xdebug.remote_enable: On
+
+php::settings:
+  PHP/max_execution_time: 0
