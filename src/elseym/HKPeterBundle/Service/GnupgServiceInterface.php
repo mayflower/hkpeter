@@ -9,6 +9,12 @@ namespace elseym\HKPeterBundle\Service;
 interface GnupgServiceInterface
 {
     /**
+     * @param string $keyId
+     * @return string
+     */
+    public function export($keyId);
+
+    /**
      * @param string $armoredKey
      * @return string[]
      */

@@ -33,6 +33,18 @@ class GnupgCliService implements GnupgServiceInterface
     }
 
     /**
+     * @param string $keyId
+     * @return string
+     */
+    public function export($keyId)
+    {
+        return $this
+            ->execute('--armor --export', $keyId)
+            ->getOutput()
+        ;
+    }
+
+    /**
      * @param string $armoredKey
      * @return string
      */
