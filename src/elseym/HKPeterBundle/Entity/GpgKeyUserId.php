@@ -42,11 +42,17 @@ class GpgKeyUserId
      */
     private $comment;
 
+    /**
+     * @var GpgKey
+     *
+     * @ORM\ManyToOne(targetEntity="elseym\HKPeterBundle\Entity\GpgKey", inversedBy="userIds")
+     */
+    private $key;
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -69,7 +75,7 @@ class GpgKeyUserId
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -92,7 +98,7 @@ class GpgKeyUserId
     /**
      * Get email
      *
-     * @return string 
+     * @return string
      */
     public function getEmail()
     {
@@ -115,10 +121,39 @@ class GpgKeyUserId
     /**
      * Get comment
      *
-     * @return string 
+     * @return string
      */
     public function getComment()
     {
         return $this->comment;
+    }
+
+    /**
+     * Get key
+     *
+     * @return GpgKey
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
+
+    /**
+     * Set key
+     *
+     * @param GpgKey $key
+     * @return GpgKey
+     */
+    public function setKey($key)
+    {
+        if (null !== $this->key) {
+            $this->key->removeUserId($this);
+        }
+        $this->key = $key;
+        if (null !== $this->key) {
+            $this->key->addUserId($this);
+        }
+
+        return $this;
     }
 }

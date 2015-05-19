@@ -2,7 +2,9 @@
 
 namespace elseym\HKPeterBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use elseym\HKPeterBundle\Model\Key;
 
 /**
  * GpgKey
@@ -22,16 +24,23 @@ class GpgKey
     private $id;
 
     /**
-     * @var \stdClass
+     * @var string
      *
-     * @ORM\Column(name="metadata", type="object")
+     * @ORM\Column(name="keyType", type="string", length=3)
+     */
+    private $keyType;
+
+    /**
+     * @var GpgKeyMetadata
+     *
+     * @ORM\OneToOne(targetEntity="elseym\HKPeterBundle\Entity\GpgKeyMetadata")
      */
     private $metadata;
 
     /**
-     * @var array
+     * @var ArrayCollection
      *
-     * @ORM\Column(name="userIds", type="array")
+     * @ORM\OneToMany(targetEntity="elseym\HKPeterBundle\Entity\GpgKeyUserId", mappedBy="key")
      */
     private $userIds;
 
@@ -43,11 +52,18 @@ class GpgKey
     private $fingerprint;
 
     /**
-     * @var array
+     * @var ArrayCollection
      *
-     * @ORM\Column(name="subKeys", type="array")
+     * @ORM\OneToMany(targetEntity="elseym\HKPeterBundle\Entity\GpgKey", mappedBy="parentKey")
      */
     private $subKeys;
+
+    /**
+     * @var GpgKey
+     *
+     * @ORM\ManyToOne(targetEntity="elseym\HKPeterBundle\Entity\GpgKey", inversedBy="subKeys")
+     */
+    private $parentKey;
 
     /**
      * @var string
@@ -56,11 +72,17 @@ class GpgKey
      */
     private $content;
 
+    function __construct($keyType)
+    {
+        $this->keyType = $keyType;
+        $this->subKeys = new ArrayCollection();
+        $this->userIds = new ArrayCollection();
+    }
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -68,12 +90,35 @@ class GpgKey
     }
 
     /**
-     * Set metadata
+     * Get keyType
      *
-     * @param \stdClass $metadata
+     * @return string
+     */
+    public function getKeyType()
+    {
+        return $this->keyType;
+    }
+
+    /**
+     * Set keyType
+     *
+     * @param string $keyType
      * @return GpgKey
      */
-    public function setMetadata($metadata)
+    public function setKeyType($keyType)
+    {
+        $this->keyType = $keyType;
+
+        return $this;
+    }
+
+    /**
+     * Set metadata
+     *
+     * @param GpgKeyMetadata $metadata
+     * @return GpgKey
+     */
+    public function setMetadata(GpgKeyMetadata $metadata)
     {
         $this->metadata = $metadata;
 
@@ -83,7 +128,7 @@ class GpgKey
     /**
      * Get metadata
      *
-     * @return \stdClass 
+     * @return GpgKeyMetadata
      */
     public function getMetadata()
     {
@@ -106,11 +151,31 @@ class GpgKey
     /**
      * Get userIds
      *
-     * @return array 
+     * @return array
      */
     public function getUserIds()
     {
         return $this->userIds;
+    }
+
+    /**
+     * Add userId
+     *
+     * @param GpgKeyUserId $userId
+     * @return $this
+     */
+    public function addUserId(GpgKeyUserId $userId)
+    {
+        $this->userIds->add($userId);
+
+        return $this;
+    }
+
+    public function removeUserId(GpgKeyUserId $userId)
+    {
+        $this->userIds->removeElement($userId);
+
+        return $this;
     }
 
     /**
@@ -129,7 +194,7 @@ class GpgKey
     /**
      * Get fingerprint
      *
-     * @return string 
+     * @return string
      */
     public function getFingerprint()
     {
@@ -152,11 +217,26 @@ class GpgKey
     /**
      * Get subKeys
      *
-     * @return array 
+     * @return array
      */
     public function getSubKeys()
     {
         return $this->subKeys;
+    }
+
+    public function addSubKey(GpgKey $subKey)
+    {
+        if (Key::TYPE_PUB !== $this->keyType) {
+            throw new \RuntimeException('cant add subKey to a GpgKey with other type than "' . Key::TYPE_PUB . '"');
+        }
+        $this->subKeys->add($subKey);
+
+        return $this;
+    }
+
+    public function removeSubKey(GpgKey $subKey)
+    {
+        $this->subKeys->removeElement($subKey);
     }
 
     /**
@@ -175,10 +255,45 @@ class GpgKey
     /**
      * Get content
      *
-     * @return string 
+     * @return string
      */
     public function getContent()
     {
         return $this->content;
     }
+
+    /**
+     * @return GpgKey
+     */
+    public function getParentKey()
+    {
+        return $this->parentKey;
+    }
+
+    /**
+     * @param GpgKey $parentKey
+     * @return GpgKey
+     */
+    public function setParentKey($parentKey)
+    {
+        if (Key::TYPE_PUB === $this->keyType) {
+            throw new \RuntimeException('cant set parentKey of a GpgKey with type "' . Key::TYPE_PUB . '"');
+        }
+        if (null !== $this->parentKey) {
+            $this->parentKey->removeSubKey($this);
+        }
+        $this->parentKey = $parentKey;
+        if (null !== $this->parentKey) {
+            $this->parentKey->addSubKey($this);
+        }
+
+        return $this;
+    }
+
+    public function hasParentKey()
+    {
+        return (null !== $this->getParentKey());
+    }
+
+
 }
