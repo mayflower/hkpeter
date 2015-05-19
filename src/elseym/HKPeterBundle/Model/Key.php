@@ -8,180 +8,24 @@ namespace elseym\HKPeterBundle\Model;
  */
 class Key
 {
-    const KIND_PUB = 'pub';
-    const KIND_SUB = 'sub';
-    const KIND_SEC = 'sec';
-    const KIND_SSB = 'ssb';
+    const TYPE_PUB = 'pub';
+    const TYPE_SUB = 'sub';
+    const TYPE_SEC = 'sec';
+    const TYPE_SSB = 'ssb';
 
-    /** @var string $id */
-    private $id;
+    const ALGORITHM_RSA = 1;
+    const ALGORITHM_ELGAMAL = 16;
+    const ALGORITHM_DSA = 17;
 
-    /** @var string $email */
-    private $email;
-
-    /** @var string $fingerprint */
-    private $fingerprint;
-
-    /** @var string $content */
-    private $content;
-
-    /**
-     * @param $id
-     * @param $email
-     * @param $fingerprint
-     * @param $content
-     */
-    function __construct($id, $email, $fingerprint, $content)
-    {
-        $this->id = $id;
-        $this->email = $email;
-        $this->fingerprint = $fingerprint;
-        $this->content = $content;
-    }
-
-    /**
-     * @param $keyString
-     */
-    public static function createFromString($keyString)
-    {
-        $fields = [
-            'uid' => [''],
-            self::KIND_PUB => ['id', 'bits', 'algo', 'year', 'month', 'day', 'flag', 'flagyear', 'flagmonth', 'flagday']
-        ];
-
-        $fields[self::KIND_SUB] = $fields[self::KIND_PUB];
-        $fields[self::KIND_SEC] = $fields[self::KIND_PUB];
-        $fields[self::KIND_SSB] = $fields[self::KIND_PUB];
-
-        $flagRegex = "(?:\\[(?'flag'(?:expire.:|revoked|expired|disabled))(?: (?'flagyear'\\d{4})-(?'flagmonth'\\d\\d)-(?'flagday'\\d\\d))\\])?";
-        $metaRegex = "(?'bits'\\d+)(?'algo'\\S)\\/(?'id'[0-9A-Fa-f]+)(?!.*[<@>])";
-        $nameRegex = "(?'uid'(?'name'.+?)\\<(?'email'[^@]+@.+\\.\\w+)\\>)";
-        $kindRegex = "(?'kind'" . implode("|", array_keys($fields)) . ")";
-        $pubSubRegex = "/" . $kindRegex . "\\s+(?:" . $metaRegex . "\\s+(?'year'\\d{4})-(?'month'\\d\\d)-(?'day'\\d\\d)\\s*" . $flagRegex ."|" . $nameRegex . ")/";
-
-        $rawKeys = [];
-        $keyIndex = 0;
-
-        $keyLines = explode("\n", $keyString);
-        foreach ($keyLines as $keyLine) {
-            if (!preg_match($pubSubRegex, $keyLine, $matches)) {
-                continue;
-            }
-
-            $data = self::extractFields($fields[$matches['kind']], $matches);
-            switch ($matches['kind']) {
-                case self::KIND_PUB:
-                case self::KIND_SEC:
-                    $keyIndex++;
-                    $rawKeys[$keyIndex] = $data;
-                    break;
-                case self::KIND_SUB:
-                case self::KIND_SSB:
-                    $rawKeys[$keyIndex]['subs'][] = $data;
-                    break;
-                case "uid":
-                    $rawKeys[$keyIndex]['uids'][] = $data;
-                    break;
-            }
-        }
-
-        var_dump($rawKeys);
-    }
-
-    /**
-     * @param array $fields
-     * @param array $source
-     * @return array
-     */
-    private static function extractFields($fields, $source)
-    {
-        $destination = [];
-        foreach($fields as $field) {
-            if (isset($source[$field])) {
-                $destination[$field] = $source[$field];
-            }
-        }
-
-        return $destination;
-    }
-
-    /**
-     * @return string
-     */
-    public function getContent()
-    {
-        return $this->content;
-    }
-
-    /**
-     * @param string $content
-     * @return $this
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    /**
-     * @param string $email
-     * @return $this
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFingerprint()
-    {
-        return $this->fingerprint;
-    }
-
-    /**
-     * @param string $fingerprint
-     * @return $this
-     */
-    public function setFingerprint($fingerprint)
-    {
-        $this->fingerprint = $fingerprint;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param string $id
-     * @return $this
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    function __toString()
-    {
-        return $this->getContent();
-    }
+    const VALIDITY_UNKNOWN_NEW = 'o';
+    const VALIDITY_INVALID = 'i';
+    const VALIDITY_DISABLED = 'd';
+    const VALIDITY_REVOKED = 'r';
+    const VALIDITY_EXPIRED = 'e';
+    const VALIDITY_UNKNOWN = '-';
+    const VALIDITY_UNDEFINED = 'q';
+    const VALIDITY_VALID = 'n';
+    const VALIDITY_VALID_MARGINAL = 'm';
+    const VALIDITY_VALID_FULLY = 'f';
+    const VALIDITY_VALID_ULTIMATELY = 'u';
 }
