@@ -30,8 +30,9 @@ class KeyFactory implements KeyFactoryInterface
 
         $keyMatches = [];
         $gpgresult = $this->gnupgService->import($armoredKey);
-
-        $regex = '/^gpg:\s+key\s+(?<keyId>[0-9a-f]{8}):\s+"(?<userId>[^"]+?)"\s+(?<result>.+)$/im';
+        //first import row:
+        //gpg: key 0E93FB4C: public key "Jens Broos <jens.broos@mayflower.de>" imported
+        $regex = '/^gpg:\s+key\s+(?<keyId>[0-9a-f]{8}):\s+(?<keyType>[^"]+?)\s*"(?<userId>[^"]+?)"\s+(?<result>.+)$/im';
         if (0 >= preg_match_all($regex, $gpgresult, $keyMatches, PREG_SET_ORDER)) {
             throw new \RuntimeException("no keys found!");
         }
@@ -48,7 +49,7 @@ class KeyFactory implements KeyFactoryInterface
         $result = [];
         foreach ($keyMatches as $keyMatch) {
             //keyId, userId, result
-
+            //TODO: check if the given keyId is already in the database
             $keyDetails = $this->gnupgService->listKeys($keyMatch['keyId']);
             $result[] = $this->createFromString($keyDetails);
         }
@@ -70,6 +71,11 @@ class KeyFactory implements KeyFactoryInterface
         fpr:::::::::AC4E86A6D7E578C56CEF1513A054F10708BD2CC8:
          *
          */
+        /*
+         *
+
+         *
+         */
         $resultKeys = array();
         $currentKey = null;
         $keyStringRows = explode(PHP_EOL, $keyString);
@@ -89,9 +95,9 @@ class KeyFactory implements KeyFactoryInterface
                     $metaData = new GpgKeyMetadata();
                     $metaData->setBits(intval($keyStringCols[2]));
                     $metaData->setAlgorithm($keyStringCols[3]);
-                    $metaData->setDateOfCreation(new \DateTime($keyStringCols[5]));
+                    $metaData->setDateOfCreation(new \DateTime('@' . $keyStringCols[5]));
                     if (is_numeric($keyStringCols[6])) {
-                        $metaData->setDateOfExpiration(new \DateTime($keyStringCols[6]));
+                        $metaData->setDateOfExpiration(new \DateTime('@' . $keyStringCols[6]));
                     }
                     $currentKey->setMetadata($metaData);
 
