@@ -63,11 +63,38 @@ class GpgKeyMetadata
      */
     private $dateOfDisablement;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="canEncrypt", type="boolean")
+     */
+    private $canEncrypt;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="canSign", type="boolean")
+     */
+    private $canSign;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="canCertify", type="boolean")
+     */
+    private $canCertify;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="canAuthenticate", type="boolean")
+     */
+    private $canAuthenticate;
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -90,7 +117,7 @@ class GpgKeyMetadata
     /**
      * Get bits
      *
-     * @return integer 
+     * @return integer
      */
     public function getBits()
     {
@@ -113,7 +140,7 @@ class GpgKeyMetadata
     /**
      * Get algorithm
      *
-     * @return integer 
+     * @return integer
      */
     public function getAlgorithm()
     {
@@ -136,7 +163,7 @@ class GpgKeyMetadata
     /**
      * Get dateOfExpiration
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateOfExpiration()
     {
@@ -159,7 +186,7 @@ class GpgKeyMetadata
     /**
      * Get dateOfCreation
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateOfCreation()
     {
@@ -182,7 +209,7 @@ class GpgKeyMetadata
     /**
      * Get dateOfRevocation
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateOfRevocation()
     {
@@ -205,10 +232,86 @@ class GpgKeyMetadata
     /**
      * Get dateOfDisablement
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDateOfDisablement()
     {
         return $this->dateOfDisablement;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isCanEncrypt()
+    {
+        return $this->canEncrypt;
+    }
+
+    /**
+     * @param boolean $canEncrypt
+     * @return GpgKeyMetadata
+     */
+    public function setCanEncrypt($canEncrypt)
+    {
+        $this->canEncrypt = $canEncrypt;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isCanSign()
+    {
+        return $this->canSign;
+    }
+
+    /**
+     * @param boolean $canSign
+     * @return GpgKeyMetadata
+     */
+    public function setCanSign($canSign)
+    {
+        $this->canSign = $canSign;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isCanCertify()
+    {
+        return $this->canCertify;
+    }
+
+    /**
+     * @param boolean $canCertify
+     * @return GpgKeyMetadata
+     */
+    public function setCanCertify($canCertify)
+    {
+        $this->canCertify = $canCertify;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isCanAuthenticate()
+    {
+        return $this->canAuthenticate;
+    }
+
+    /**
+     * @param boolean $canAuthenticate
+     * @return GpgKeyMetadata
+     */
+    public function setCanAuthenticate($canAuthenticate)
+    {
+        $this->canAuthenticate = $canAuthenticate;
+
+        return $this;
     }
 }
