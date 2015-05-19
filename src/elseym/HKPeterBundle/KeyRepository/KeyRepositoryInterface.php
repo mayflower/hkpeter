@@ -1,6 +1,7 @@
 <?php
 
 namespace elseym\HKPeterBundle\KeyRepository;
+use elseym\HKPeterBundle\Entity\GpgKey;
 use elseym\HKPeterBundle\Model\Key;
 
 /**
@@ -22,7 +23,7 @@ interface KeyRepositoryInterface
 
     /**
      * @param string $armoredKey
-     * @return Key[]
+     * @return GpgKey[]
      */
     public function add($armoredKey);
 }

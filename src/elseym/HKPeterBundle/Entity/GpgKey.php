@@ -294,6 +294,4 @@ class GpgKey
     {
         return (null !== $this->getParentKey());
     }
-
-
 }

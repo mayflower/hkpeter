@@ -6,7 +6,7 @@ namespace elseym\HKPeterBundle\Model;
  * Class Key
  * @package elseym\HKPeterBundle\Model
  */
-class Key
+abstract class Key
 {
     const TYPE_PUB = 'pub';
     const TYPE_SUB = 'sub';

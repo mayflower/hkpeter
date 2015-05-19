@@ -2,6 +2,7 @@
 
 namespace elseym\HKPeterBundle\KeyRepository;
 
+use elseym\HKPeterBundle\Entity\GpgKey;
 use elseym\HKPeterBundle\Exception\GnupgException;
 use elseym\HKPeterBundle\Exception\KeyRepositoryException;
 use elseym\HKPeterBundle\Model\Key;
@@ -48,7 +49,7 @@ class RandomKeyRepository implements KeyRepositoryInterface
 
     /**
      * @param string $armoredKey
-     * @return Key[]
+     * @return GpgKey[]
      */
     public function add($armoredKey)
     {

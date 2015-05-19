@@ -7,7 +7,7 @@ services:
     abstract: true
     calls:
       - [ setRouter,  [ @router ] ]
-      - [ setKeyRepository, [ @hkpeter.key_repository.random ] ]
+      - [ setKeyRepository, [ @hkpeter.key_repository.gnupg ] ]
 
   hkpeter.controller.hkp:
     class: %hkpeter.controller.hkp.class%
@@ -20,3 +20,4 @@ services:
       - [ setTemplating, [ @templating ] ]
       - [ setFormFactory, [ @form.factory ] ]
       - [ setSession, [ @session ] ]
+      - [ setKeyFactory, [ @hkpeter.factory.key_factory ] ]

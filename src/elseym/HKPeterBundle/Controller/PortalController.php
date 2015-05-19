@@ -2,6 +2,7 @@
 
 namespace elseym\HKPeterBundle\Controller;
 
+use elseym\HKPeterBundle\Factory\KeyFactoryInterface;
 use elseym\HKPeterBundle\Model\Key;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\Form;
@@ -26,6 +27,9 @@ class PortalController extends AbstractController
 
     /** @var FormFactory $formFactory  */
     private $formFactory;
+
+    /** @var KeyFactoryInterface */
+    private $keyFactory;
 
     /**
      * @param Request $request
@@ -67,8 +71,8 @@ class PortalController extends AbstractController
             if ($addForm->isValid()) {
                 $armoredKey = $addForm->get('armoredKey')->getData();
                 if (null !== $armoredKey) {
-                    $key = $this->keyRepository->add($armoredKey);
-                    if ($key instanceof Key) {
+                    $gpgKeys = $this->keyRepository->add($armoredKey);
+                    if ($gpgKeys) {
                         $this->session->getFlashBag()->add('success', 'added key successfully');
 
                         return new RedirectResponse($this->router->generate('hp_portal'));
@@ -115,6 +119,16 @@ class PortalController extends AbstractController
     public function setSession($session)
     {
         $this->session = $session;
+
+        return $this;
+    }
+
+    /**
+     * @param KeyFactoryInterface $keyFactory
+     */
+    public function setKeyFactory($keyFactory)
+    {
+        $this->keyFactory = $keyFactory;
 
         return $this;
     }

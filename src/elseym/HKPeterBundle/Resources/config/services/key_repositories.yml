@@ -1,14 +1,22 @@
 parameters:
   hkpeter.key_repository.gnupg.class: elseym\HKPeterBundle\KeyRepository\GnupgKeyRepository
   hkpeter.key_repository.random.class: elseym\HKPeterBundle\KeyRepository\RandomKeyRepository
+  hkpeter.key_repository.doctrine.class: elseym\HKPeterBundle\KeyRepository\DoctrineKeyRepository
 
 services:
   hkpeter.key_repository.gnupg:
     class: %hkpeter.key_repository.gnupg.class%
     calls:
       - [ setGnupgService, [ @hkpeter.service.gnupg_cli ] ]
+      - [ setKeyFactory, [ @hkpeter.factory.key_factory ] ]
 
   hkpeter.key_repository.random:
     class: %hkpeter.key_repository.random.class%
     calls:
       - [ setWordService, [ @hkpeter.service.word ] ]
+
+  hkpeter.key_repository.doctrine:
+    class: %hkpeter.key_repository.doctrine.class%
+    calls:
+      - [ setEntityManager, [ @doctrine.orm.entity_manager ] ]
+      - [ setKeyFactory, [ @hkpeter.factory.key_factory ] ]

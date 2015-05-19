@@ -3,6 +3,7 @@ parameters:
   hkpeter.service.word.class: elseym\HKPeterBundle\Service\WordService
   hkpeter.service.sp_bower_post_install.class: elseym\HKPeterBundle\Service\SpBowerPostInstallService
   hkpeter.service.pgpdump_cli.class: elseym\HKPeterBundle\Service\PgpdumpCliService
+  hkpeter.factory.key_factory.class: elseym\HKPeterBundle\Factory\KeyFactory
   hkpeter.form.add_key.class: elseym\HKPeterBundle\Form\Type\AddKeyType
 
 services:
@@ -18,6 +19,11 @@ services:
     class: %hkpeter.service.pgpdump_cli.class%
     calls:
       - [ setPgpdumpBin, [ %hkpeter.pgpdump_cli.bin% ] ]
+
+  hkpeter.factory.key_factory:
+    class: %hkpeter.factory.key_factory.class%
+    calls:
+      - [ setGnupgService, [ @hkpeter.service.gnupg_cli ] ]
 
   hkpeter.service.word:
     class: %hkpeter.service.word.class%
