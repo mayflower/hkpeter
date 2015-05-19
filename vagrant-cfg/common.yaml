@@ -20,10 +20,6 @@ php::extensions:
   curl: {}
   json: {}
   intl: {}
-  xdebug:
-    settings:
-      xdebug.remote_connect_back: On
-      xdebug.overload_var_dump: 0
 
 php::settings:
   Date/date.timezone: Europe/Berlin

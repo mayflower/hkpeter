@@ -24,3 +24,10 @@ component::shellrc::aliases:
 
 component::shellrc::raw_lines:
   - '[[ $- == *i* ]] && www'
+
+php::extensions:
+  xdebug:
+    settings:
+      xdebug.remote_connect_back: On
+      xdebug.overload_var_dump: 0
+      xdebug.remote_enable: On
