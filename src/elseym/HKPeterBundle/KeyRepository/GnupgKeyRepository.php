@@ -20,16 +20,29 @@ class GnupgKeyRepository implements KeyRepositoryInterface
     private $keyFactory;
 
 
+    /**
+     * @param array $predicates
+     * @param string $mode
+     * @return GpgKey[]
+     */
     public function findBy(array $predicates = [], $mode = self::FIND_PREDICATE_ALL)
     {
         // TODO: Implement findBy() method.
     }
 
+    /**
+     * @param string $email
+     * @return GpgKey|null
+     */
     public function findByEmail($email)
     {
         // TODO: Implement findByEmail() method.
     }
 
+    /**
+     * @param string $keyId
+     * @return GpgKey|null
+     */
     public function findByKeyId($keyId)
     {
         // TODO: Implement findByKeyId() method.

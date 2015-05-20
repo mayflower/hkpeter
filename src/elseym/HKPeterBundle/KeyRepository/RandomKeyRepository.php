@@ -21,7 +21,7 @@ class RandomKeyRepository implements KeyRepositoryInterface
     /**
      * @param array $predicates
      * @param string $mode
-     * @return Key[]
+     * @return GpgKey[]
      */
     public function findBy(array $predicates = [], $mode = self::FIND_PREDICATE_ALL)
     {
@@ -48,14 +48,26 @@ class RandomKeyRepository implements KeyRepositoryInterface
         return $keys;
     }
 
+    /**
+     * @param string $email
+     * @return GpgKey|null
+     */
     public function findByEmail($email)
     {
-        return $this->findBy(['email' => $email]);
+        $result = $this->findBy(['email' => $email]);
+
+        return $result ? $result[0] : null;
     }
 
+    /**
+     * @param string $keyId
+     * @return GpgKey|null
+     */
     public function findByKeyId($keyId)
     {
-        return $this->findBy(['id' => $keyId]);
+        $result = $this->findBy(['id' => $keyId]);
+
+        return $result ? $result[0] : null;
     }
 
     /**

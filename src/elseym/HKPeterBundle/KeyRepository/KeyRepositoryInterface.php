@@ -21,8 +21,16 @@ interface KeyRepositoryInterface
      */
     public function findBy(array $predicates = [], $mode = self::FIND_PREDICATE_ALL);
 
+    /**
+     * @param string $email
+     * @return GpgKey|null
+     */
     public function findByEmail($email);
 
+    /**
+     * @param string $keyId
+     * @return GpgKey|null
+     */
     public function findByKeyId($keyId);
 
     /**

@@ -23,7 +23,7 @@ class DoctrineKeyRepository implements KeyRepositoryInterface
     /**
      * @param array $predicates
      * @param string $mode
-     * @return Key[]
+     * @return GpgKey[]
      */
     public function findBy(array $predicates = [], $mode = self::FIND_PREDICATE_ALL)
     {
@@ -48,6 +48,11 @@ class DoctrineKeyRepository implements KeyRepositoryInterface
         ;
     }
 
+    /**
+     * @param string $email
+     * @return GpgKey|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function findByEmail($email)
     {
         if (!$email) {
@@ -66,6 +71,11 @@ class DoctrineKeyRepository implements KeyRepositoryInterface
         ;
     }
 
+    /**
+     * @param string $keyId
+     * @return GpgKey|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function findByKeyId($keyId)
     {
         if (!$keyId) {
