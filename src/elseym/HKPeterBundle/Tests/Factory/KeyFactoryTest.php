@@ -176,4 +176,39 @@ class KeyFactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('elseym\HKPeterBundle\Entity\GpgKey', $key);
     }
 
+    /**
+     * @covers KeyFactory::createFromEmail
+     */
+    public function testCreateFromKeyEmailWithUnknownKeyIdReturnsNull()
+    {
+        $mock = $this->getGnupgServiceMock();
+        $mock->expects($this->once())
+            ->method('listKeys')
+            ->willReturn('gpg: error reading key: public key not found');
+
+        $this->model->setGnupgService($mock);
+        $key = $this->model->createFromEmail('foo');
+
+        $this->assertEquals(null, $key);
+    }
+
+    /**
+     * @covers KeyFactory::createFromEmail
+     */
+    public function testCreateFromKeyEmailWithKnownEmailReturnsGpgKey()
+    {
+        $mock = $this->getGnupgServiceMock();
+        $mock->expects($this->once())
+            ->method('listKeys')
+            ->willReturn($this->getGnupgServiceListKeysResult());
+        $mock->expects($this->once())
+            ->method('export')
+            ->with('6ED27E9FFD204126') // return from listKeys(FD204126)
+            ->willReturn($this->getGnupgServiceExportResult());
+
+        $this->model->setGnupgService($mock);
+        $key = $this->model->createFromEmail('marcel.idler@mayflower.de');
+
+        $this->assertInstanceOf('elseym\HKPeterBundle\Entity\GpgKey', $key);
+    }
 }

@@ -56,6 +56,7 @@ class GnupgCliService implements GnupgServiceInterface
     }
 
     /**
+     * executes the --list-keys with the given $keyId. Attention: $keyId can be a keyId OR an email address
      * @param string $keyId
      * @return string
      */

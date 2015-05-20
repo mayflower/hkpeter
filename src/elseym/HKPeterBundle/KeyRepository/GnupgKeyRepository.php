@@ -36,7 +36,7 @@ class GnupgKeyRepository implements KeyRepositoryInterface
      */
     public function findByEmail($email)
     {
-        // TODO: Implement findByEmail() method.
+        return $this->keyFactory->createFromEmail($email);
     }
 
     /**
@@ -45,7 +45,7 @@ class GnupgKeyRepository implements KeyRepositoryInterface
      */
     public function findByKeyId($keyId)
     {
-        // TODO: Implement findByKeyId() method.
+        return $this->keyFactory->createFromKeyId($keyId);
     }
 
     /**

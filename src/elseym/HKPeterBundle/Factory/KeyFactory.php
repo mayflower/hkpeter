@@ -68,6 +68,16 @@ class KeyFactory implements KeyFactoryInterface
     }
 
     /**
+     * @param string $email
+     * @return GpgKey|null
+     */
+    public function createFromEmail($email)
+    {
+        $keyDetails = $this->gnupgService->listKeys($email);
+        return $this->createFromString($keyDetails);
+    }
+
+    /**
      * @param string $keyString
      * @return GpgKey|null
      */
