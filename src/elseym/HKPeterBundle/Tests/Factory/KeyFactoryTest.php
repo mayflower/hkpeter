@@ -12,26 +12,12 @@ class KeyFactoryTest extends \PHPUnit_Framework_TestCase
 {
 
     /**
-     * @var \AppKernel
-     */
-    private $kernel;
-
-    /**
-     * @var Symfony\Component\DependencyInjection\Container
-     */
-    private $container;
-
-    /**
      * @var KeyFactory
      */
     private $model;
 
     public function setUp()
     {
-        $this->kernel = new \AppKernel('test', true);
-        $this->kernel->boot();
-        $this->container = $this->kernel->getContainer();
-
         $this->model = new KeyFactory();
     }
 
@@ -90,25 +76,6 @@ class KeyFactoryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers KeyFactory::createFromArmoredKey
-     */
-    public function mops()
-    {
-        /**
-        $mock = $this->getGnupgServiceMock();
-        $mock->expects($this->once())
-             ->method('import')
-             ->willReturn($this->getGnupgServiceImportResult());*/
-
-        $service = $this->container->get('hkpeter.service.gnupg_cli');
-        echo "LIST: ";
-var_dump($service->listKeys('FD204126'));
-        echo " ENDLIST;";
-        #$this->model->setGnupgService($service);
-        #$keys = $this->model->createFromArmoredKey($this->getArmoredKey());
-    }
-
-    /**
-     * @covers KeyFactory::createFromArmoredKey
      * @expectedException RuntimeException
      * @expectedExceptionMessage No keys found
      */
@@ -144,7 +111,7 @@ var_dump($service->listKeys('FD204126'));
 
         /** @var GpgKey $key */
         foreach($keys as $key) {
-            $this->assertSame($this->getGnupgServiceExportResult(), $key->getContent());
+            $this->assertEquals($this->getGnupgServiceExportResult(), $key->getContent());
         }
     }
 
@@ -169,8 +136,43 @@ var_dump($service->listKeys('FD204126'));
 
         /** @var GpgKey $key */
         foreach($keys as $key) {
-            $this->assertSame($this->getGnupgServiceExportResult(), $key->getContent());
+            $this->assertEquals($this->getGnupgServiceExportResult(), $key->getContent());
         }
+    }
+
+    /**
+     * @covers KeyFactory::createFromKeyId
+     */
+    public function testCreateFromKeyIdWithUnknownKeyIdReturnsNull()
+    {
+        $mock = $this->getGnupgServiceMock();
+        $mock->expects($this->once())
+            ->method('listKeys')
+            ->willReturn('gpg: error reading key: public key not found');
+
+        $this->model->setGnupgService($mock);
+        $key = $this->model->createFromKeyId('foo');
+
+        $this->assertEquals(null, $key);
+    }
+
+    /**
+     * @covers KeyFactory::createFromKeyId
+     */
+    public function testCreateFromKeyIdWithKnownKeyIdReturnsGpgKey()
+    {
+        $mock = $this->getGnupgServiceMock();
+        $mock->expects($this->once())
+            ->method('listKeys')
+            ->willReturn($this->getGnupgServiceListKeysResult());
+        $mock->expects($this->once())
+            ->method('export')
+            ->willReturn($this->getGnupgServiceExportResult());
+
+        $this->model->setGnupgService($mock);
+        $key = $this->model->createFromKeyId('foo');
+
+        $this->assertInstanceOf('elseym\HKPeterBundle\Entity\GpgKey', $key);
     }
 
 }
