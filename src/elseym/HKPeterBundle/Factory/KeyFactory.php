@@ -14,27 +14,31 @@ use elseym\HKPeterBundle\Service\GnupgCliService;
  */
 class KeyFactory implements KeyFactoryInterface
 {
-    /** @var GnupgCliService $gnupgService */
+    /**
+     * @var GnupgCliService $gnupgService
+     */
     private $gnupgService;
 
     /**
-     * @param $armoredKey
+     * Import the armored key into the key store
+     *
+     * @param string $armoredKey
      * @return GpgKey[]
      */
     public function createFromArmoredKey($armoredKey)
     {
-        //import the armored key into the key store
         //walk through all imported KeyIds
         //list key details
         //export key to get armored key
 
         $keyMatches = [];
         $gpgresult = $this->gnupgService->import($armoredKey);
+
         //first import row:
         //gpg: key 0E93FB4C: public key "Jens Broos <jens.broos@mayflower.de>" imported
         $regex = '/^gpg:\s+key\s+(?<keyId>[0-9a-f]{8}):\s+(?<keyType>[^"]+?)\s*"(?<userId>[^"]+?)"\s+(?<result>.+)$/im';
         if (0 >= preg_match_all($regex, $gpgresult, $keyMatches, PREG_SET_ORDER)) {
-            throw new \RuntimeException("no keys found!");
+            throw new \RuntimeException("No keys found");
         }
 
         $regex = '/gpg: Total number processed: (?<count>\d+)/i';
@@ -76,7 +80,7 @@ class KeyFactory implements KeyFactoryInterface
 
          *
          */
-        $resultKeys = array();
+        $resultKey = null;
         $currentKey = null;
         $keyStringRows = explode(PHP_EOL, $keyString);
         foreach ($keyStringRows as $keyStringRow) {
@@ -90,7 +94,7 @@ class KeyFactory implements KeyFactoryInterface
                     $armoredKey = $this->gnupgService->export($keyId);
                     $currentKey->setContent($armoredKey);
 
-                    $resultKeys[] = $currentKey;
+                    $resultKey = $currentKey;
 
                     $metaData = new GpgKeyMetadata();
                     $metaData->setBits(intval($keyStringCols[2]));
@@ -149,14 +153,14 @@ class KeyFactory implements KeyFactoryInterface
             }
         }
 
-        return $resultKeys;
+        return $resultKey;
     }
 
     /**
      * @param GnupgCliService $gnupgService
      * @return $this;
      */
-    public function setGnupgService($gnupgService)
+    public function setGnupgService(GnupgCliService $gnupgService)
     {
         $this->gnupgService = $gnupgService;
 

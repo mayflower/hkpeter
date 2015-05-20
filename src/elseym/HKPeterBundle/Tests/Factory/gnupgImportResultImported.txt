@@ -1,0 +1,3 @@
+gpg: key FD204126: public key "Marcel Idler <marcel.idler@mayflower.de>" imported
+gpg: Total number processed: 1
+gpg:               imported: 1  (RSA: 1)

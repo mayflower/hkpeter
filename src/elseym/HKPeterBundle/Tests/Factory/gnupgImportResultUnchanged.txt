@@ -1,0 +1,3 @@
+gpg: key FD204126: "Marcel Idler <marcel.idler@mayflower.de>" not changed
+gpg: Total number processed: 1
+gpg:              unchanged: 1
