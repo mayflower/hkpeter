@@ -167,10 +167,11 @@ class KeyFactoryTest extends \PHPUnit_Framework_TestCase
             ->willReturn($this->getGnupgServiceListKeysResult());
         $mock->expects($this->once())
             ->method('export')
+            ->with('6ED27E9FFD204126') // return from listKeys(FD204126)
             ->willReturn($this->getGnupgServiceExportResult());
 
         $this->model->setGnupgService($mock);
-        $key = $this->model->createFromKeyId('foo');
+        $key = $this->model->createFromKeyId('FD204126');
 
         $this->assertInstanceOf('elseym\HKPeterBundle\Entity\GpgKey', $key);
     }
