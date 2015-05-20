@@ -3,6 +3,7 @@
 namespace elseym\HKPeterBundle\KeyRepository;
 
 use Doctrine\ORM\EntityManager;
+use elseym\HKPeterBundle\Entity\GpgKey;
 use elseym\HKPeterBundle\Factory\KeyFactory;
 use elseym\HKPeterBundle\Model\Key;
 use elseym\HKPeterBundle\Service\GnupgCliService;
@@ -26,7 +27,60 @@ class DoctrineKeyRepository implements KeyRepositoryInterface
      */
     public function findBy(array $predicates = [], $mode = self::FIND_PREDICATE_ALL)
     {
-        // TODO: Implement findBy() method.
+        $qb = $this->entityManager
+            ->getRepository('elseymHKPeterBundle:GpgKey')
+            ->createQueryBuilder('k')
+            ->select('k')
+        ;
+        foreach ($predicates as $predicate => $value) {
+            $condition = 'k.' . $predicate . '=:' . $predicate;
+            if (self::FIND_PREDICATE_ANY === $mode) {
+                $qb->orWhere($condition);
+            } else {
+                $qb->andWhere($condition);
+            }
+            $qb->setParameter($predicate, $value);
+        }
+
+        return $qb
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function findByEmail($email)
+    {
+        if (!$email) {
+            return null;
+        }
+
+        return $qb = $this->entityManager
+            ->getRepository('elseymHKPeterBundle:GpgKey')
+            ->createQueryBuilder('k')
+            ->select('k')
+            ->join('k.userIds', 'uid')
+            ->where('uid.email = :email')
+            ->setParameter('email', $email)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+    public function findByKeyId($keyId)
+    {
+        if (!$keyId) {
+            return null;
+        }
+
+        return $qb = $this->entityManager
+            ->getRepository('elseymHKPeterBundle:GpgKey')
+            ->createQueryBuilder('k')
+            ->select('k')
+            ->where('k.keyId = :keyId')
+            ->setParameter('keyId', $keyId)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
     }
 
     /**

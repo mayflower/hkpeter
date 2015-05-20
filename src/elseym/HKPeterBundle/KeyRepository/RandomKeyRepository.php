@@ -3,6 +3,7 @@
 namespace elseym\HKPeterBundle\KeyRepository;
 
 use elseym\HKPeterBundle\Entity\GpgKey;
+use elseym\HKPeterBundle\Entity\GpgKeyUserId;
 use elseym\HKPeterBundle\Exception\GnupgException;
 use elseym\HKPeterBundle\Exception\KeyRepositoryException;
 use elseym\HKPeterBundle\Model\Key;
@@ -47,6 +48,16 @@ class RandomKeyRepository implements KeyRepositoryInterface
         return $keys;
     }
 
+    public function findByEmail($email)
+    {
+        return $this->findBy(['email' => $email]);
+    }
+
+    public function findByKeyId($keyId)
+    {
+        return $this->findBy(['id' => $keyId]);
+    }
+
     /**
      * @param string $armoredKey
      * @return GpgKey[]
@@ -65,12 +76,15 @@ class RandomKeyRepository implements KeyRepositoryInterface
      */
     private function generateKey($id = null, $email = null, $fingerprint = null, $content = null)
     {
-        return new Key(
-            $id ?: mt_rand(41, 9742),
-            $email ?: $this->wordService->get(1) . "@" . $this->wordService->get(1) . ".com",
-            $fingerprint ?: sha1(mt_rand(41, 9742)),
-            $content ?: implode(" ", $this->wordService->get(23))
-        );
+        $key = new GpgKey(Key::TYPE_PUB);
+        $key->setKeyId($id ?: mt_rand(41, 9742));
+        $key->setContent($content ?: implode(" ", $this->wordService->get(23)));
+        $key->setFingerprint($fingerprint ?: sha1(mt_rand(41, 9742)));
+        $userId = new GpgKeyUserId();
+        $userId->setEmail($email ?: $this->wordService->get(1) . "@" . $this->wordService->get(1) . ".com");
+        $userId->setKey($key);
+
+        return $key;
     }
 
     /**

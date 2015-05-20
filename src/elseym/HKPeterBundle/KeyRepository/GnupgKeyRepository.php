@@ -25,6 +25,16 @@ class GnupgKeyRepository implements KeyRepositoryInterface
         // TODO: Implement findBy() method.
     }
 
+    public function findByEmail($email)
+    {
+        // TODO: Implement findByEmail() method.
+    }
+
+    public function findByKeyId($keyId)
+    {
+        // TODO: Implement findByKeyId() method.
+    }
+
     /**
      * @param string $armoredKey
      * @return GpgKey[]
