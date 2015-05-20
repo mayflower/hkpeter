@@ -14,31 +14,27 @@ use elseym\HKPeterBundle\Service\GnupgCliService;
  */
 class KeyFactory implements KeyFactoryInterface
 {
-    /**
-     * @var GnupgCliService $gnupgService
-     */
+    /** @var GnupgCliService $gnupgService */
     private $gnupgService;
 
     /**
-     * Import the armored key into the key store
-     *
-     * @param string $armoredKey
+     * @param $armoredKey
      * @return GpgKey[]
      */
     public function createFromArmoredKey($armoredKey)
     {
+        //import the armored key into the key store
         //walk through all imported KeyIds
         //list key details
         //export key to get armored key
 
         $keyMatches = [];
         $gpgresult = $this->gnupgService->import($armoredKey);
-
         //first import row:
         //gpg: key 0E93FB4C: public key "Jens Broos <jens.broos@mayflower.de>" imported
-        $regex = '/^gpg:\s+key\s+(?<keyId>[0-9a-f]{8}):\s+(?<keyType>[^"]+?)\s*"(?<userId>[^"]+?)"\s+(?<result>.+)$/im';
+        $regex = '/^gpg:\s+key\s+(?<keyId>[0-9a-f]{8}):\s+(?<keyType>[^"]+?)?\s*"(?<userId>[^"]+?)"\s+(?<result>.+)$/im';
         if (0 >= preg_match_all($regex, $gpgresult, $keyMatches, PREG_SET_ORDER)) {
-            throw new \RuntimeException("No keys found");
+            throw new \RuntimeException("no keys found!");
         }
 
         $regex = '/gpg: Total number processed: (?<count>\d+)/i';
@@ -77,10 +73,20 @@ class KeyFactory implements KeyFactoryInterface
          */
         /*
          *
-
+        tru::1:1432026330:0:3:1:5
+        pub:-:2048:17:76D78F0500D026C4:1282220531:1534698479::-:::scESC:
+        fpr:::::::::85E38F69046B44C1EC9FB07B76D78F0500D026C4:
+        uid:-::::1421255279::CAACC8CE9116A0BE42E58C61602F127B194EF5A5::GPGTools Team <team@gpgtools.org>:
+        uid:-::::1421255279::03B2DCE7652DBBB93DA77FFC4328F122656E20DD::GPGMail Project Team (Official OpenPGP Key) <gpgmail-devel@lists.gpgmail.org>:
+        uid:-::::1421255279::8CACAFAD028BE38151D2361F9CD79CC81B4153B2::GPGTools Project Team (Official OpenPGP Key) <gpgtools-org@lists.gpgtools.org>:
+        uat:-::::1421255279::076E59FC200B10E38AEEA745AB6547AEE99FB9EE::1 5890:
+        sub:-:2048:16:07EAE49ADBCBE671:1282220531:1534698500:::::e:
+        fpr:::::::::CF5DA29DD13D6856B5820B2F07EAE49ADBCBE671:
+        sub:-:4096:1:E8A664480D9E43F5:1396950003:1704188403:::::s:
+        fpr:::::::::8C31E5A17DD5D932B448FE1DE8A664480D9E43F5:
          *
          */
-        $resultKey = null;
+        $resultKeys = [];
         $currentKey = null;
         $keyStringRows = explode(PHP_EOL, $keyString);
         foreach ($keyStringRows as $keyStringRow) {
@@ -94,7 +100,7 @@ class KeyFactory implements KeyFactoryInterface
                     $armoredKey = $this->gnupgService->export($keyId);
                     $currentKey->setContent($armoredKey);
 
-                    $resultKey = $currentKey;
+                    $resultKeys[] = $currentKey;
 
                     $metaData = new GpgKeyMetadata();
                     $metaData->setBits(intval($keyStringCols[2]));
@@ -103,15 +109,13 @@ class KeyFactory implements KeyFactoryInterface
                     if (is_numeric($keyStringCols[6])) {
                         $metaData->setDateOfExpiration(new \DateTime('@' . $keyStringCols[6]));
                     }
-                    $currentKey->setMetadata($metaData);
-
-                    //TODO: save the capabilities in the meta data
                     $capabilities = strtolower($keyStringCols[7]);
-                    $canEncrypt = stristr($capabilities, 'e');
-                    $canSign = stristr($capabilities, 's');
-                    $canCertify = stristr($capabilities, 'c');
-                    $canAuthenticate = stristr($capabilities, 'a');
+                    $metaData->setCanEncrypt(stristr($capabilities, 'e'));
+                    $metaData->setCanSign(stristr($capabilities, 's'));
+                    $metaData->setCanCertify(stristr($capabilities, 'c'));
+                    $metaData->setCanAuthenticate(stristr($capabilities, 'a'));
 
+                    $currentKey->setMetadata($metaData);
                     break;
                 case 'sub':
                     if (null === $currentKey) {
@@ -133,12 +137,20 @@ class KeyFactory implements KeyFactoryInterface
                     if (null === $currentKey) {
                         throw new \RuntimeException('cant parse "uid" line without previous pub key line');
                     }
-                    //TODO: split $keyStringCols[9] in userId parts
-                    $userId = new GpgKeyUserId();
-                    $userId->setComment($keyStringCols[9]);
-                    $currentKey->addUserId($userId);
+                    $userParts = [];
+                    if (1 === preg_match('/^(?<name>.*)\s+<(?<email>.*)>$/i', $keyStringCols[9], $userParts)) {
+                        $userId = new GpgKeyUserId();
+                        $userId->setName($userParts['name']);
+                        $userId->setEmail($userParts['email']);
+                        $userId->setKey($currentKey);
+                    }
                     break;
                 case 'uat':
+                    /**
+                     * A UAT record puts the attribute subpacket count here, a
+                     * space, and then the total attribute subpacket size.
+                     */
+                    list($subpacketCount, $subpacketSize) = explode(' ', $keyStringCols[9], 2);
 
                     break;
                 case 'fpr':
@@ -149,18 +161,17 @@ class KeyFactory implements KeyFactoryInterface
                     break;
                 case 'tru':
                     continue;
-
             }
         }
 
-        return $resultKey;
+        return $resultKeys;
     }
 
     /**
      * @param GnupgCliService $gnupgService
      * @return $this;
      */
-    public function setGnupgService(GnupgCliService $gnupgService)
+    public function setGnupgService($gnupgService)
     {
         $this->gnupgService = $gnupgService;
 
