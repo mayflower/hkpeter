@@ -40,14 +40,14 @@ class GpgKey
     /**
      * @var GpgKeyMetadata
      *
-     * @ORM\OneToOne(targetEntity="elseym\HKPeterBundle\Entity\GpgKeyMetadata")
+     * @ORM\OneToOne(targetEntity="elseym\HKPeterBundle\Entity\GpgKeyMetadata",cascade={ "persist" })
      */
     private $metadata;
 
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="elseym\HKPeterBundle\Entity\GpgKeyUserId", mappedBy="key")
+     * @ORM\OneToMany(targetEntity="elseym\HKPeterBundle\Entity\GpgKeyUserId", mappedBy="key", cascade={ "persist" })
      */
     private $userIds;
 
@@ -61,14 +61,14 @@ class GpgKey
     /**
      * @var ArrayCollection
      *
-     * @ORM\OneToMany(targetEntity="elseym\HKPeterBundle\Entity\GpgKey", mappedBy="parentKey")
+     * @ORM\OneToMany(targetEntity="elseym\HKPeterBundle\Entity\GpgKey", mappedBy="parentKey", cascade={ "persist" })
      */
     private $subKeys;
 
     /**
      * @var GpgKey
      *
-     * @ORM\ManyToOne(targetEntity="elseym\HKPeterBundle\Entity\GpgKey", inversedBy="subKeys")
+     * @ORM\ManyToOne(targetEntity="elseym\HKPeterBundle\Entity\GpgKey", inversedBy="subKeys", cascade={ "persist" })
      */
     private $parentKey;
 
