@@ -18,7 +18,7 @@ class KeyFactory implements KeyFactoryInterface
     private $gnupgService;
 
     /**
-     * @param $armoredKey
+     * @param string $armoredKey
      * @return GpgKey[]
      */
     public function createFromArmoredKey($armoredKey)
@@ -34,7 +34,7 @@ class KeyFactory implements KeyFactoryInterface
         //gpg: key 0E93FB4C: public key "Jens Broos <jens.broos@mayflower.de>" imported
         $regex = '/^gpg:\s+key\s+(?<keyId>[0-9a-f]{8}):\s+(?<keyType>[^"]+?)?\s*"(?<userId>[^"]+?)"\s+(?<result>.+)$/im';
         if (0 >= preg_match_all($regex, $gpgresult, $keyMatches, PREG_SET_ORDER)) {
-            throw new \RuntimeException("no keys found!");
+            throw new \RuntimeException("No keys found");
         }
 
         $regex = '/gpg: Total number processed: (?<count>\d+)/i';
@@ -57,6 +57,20 @@ class KeyFactory implements KeyFactoryInterface
         return $result;
     }
 
+    /**
+     * @param string $keyId
+     * @return GpgKey|null
+     */
+    public function createFromKeyId($keyId)
+    {
+        $keyDetails = $this->gnupgService->listKeys($keyId);
+        return $this->createFromString($keyDetails);
+    }
+
+    /**
+     * @param string $keyString
+     * @return GpgKey|null
+     */
     private function createFromString($keyString)
     {
         //The details of $keyString format are documented in the file doc/DETAILS, which is included in the GnuPG
@@ -86,7 +100,7 @@ class KeyFactory implements KeyFactoryInterface
         fpr:::::::::8C31E5A17DD5D932B448FE1DE8A664480D9E43F5:
          *
          */
-        $resultKeys = [];
+        $resultKey  = null;
         $currentKey = null;
         $keyStringRows = explode(PHP_EOL, $keyString);
         foreach ($keyStringRows as $keyStringRow) {
@@ -96,12 +110,11 @@ class KeyFactory implements KeyFactoryInterface
                 case 'pub':
                     //create a new $currentKey for every new "pub" line
                     $currentKey = new GpgKey(Key::TYPE_PUB);
+                    $resultKey  = $currentKey;
                     $keyId = $keyStringCols[4];
                     $currentKey->setKeyId($keyId);
                     $armoredKey = $this->gnupgService->export($keyId);
                     $currentKey->setContent($armoredKey);
-
-                    $resultKeys[] = $currentKey;
 
                     $metaData = new GpgKeyMetadata();
                     $metaData->setBits(intval($keyStringCols[2]));
@@ -165,7 +178,7 @@ class KeyFactory implements KeyFactoryInterface
             }
         }
 
-        return $resultKeys;
+        return $resultKey;
     }
 
     /**

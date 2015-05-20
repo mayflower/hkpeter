@@ -32,3 +32,8 @@ reload (dev)
   - `vagrant destroy`
   - `vagrant up`
   - `vagrant ssh -c "cd /var/www/hkpeter && composer install"`
+
+run tests (dev)
+---------------
+
+- `vagrant ssh -c "cd /var/www/hkpeter && bin/phpunit -c app/"`
