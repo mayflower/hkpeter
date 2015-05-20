@@ -90,8 +90,13 @@ class DoctrineKeyRepository implements KeyRepositoryInterface
     public function add($armoredKey)
     {
         $keys = $this->keyFactory->createFromArmoredKey($armoredKey);
-
-        //TODO: store the keys in the database
+        if ($keys) {
+            $em = $this->entityManager;
+            foreach ($keys as $key) {
+                $em->persist($key);
+            }
+            $em->flush();
+        }
 
         return $keys;
     }
