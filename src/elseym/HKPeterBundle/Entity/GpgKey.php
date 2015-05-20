@@ -31,6 +31,13 @@ class GpgKey
     private $keyType;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="keyId", type="string", length=8)
+     */
+    private $keyId;
+
+    /**
      * @var GpgKeyMetadata
      *
      * @ORM\OneToOne(targetEntity="elseym\HKPeterBundle\Entity\GpgKeyMetadata")
@@ -108,6 +115,29 @@ class GpgKey
     public function setKeyType($keyType)
     {
         $this->keyType = $keyType;
+
+        return $this;
+    }
+
+    /**
+     * Get keyId
+     *
+     * @return string
+     */
+    public function getKeyId()
+    {
+        return $this->keyId;
+    }
+
+    /**
+     * Set keyId
+     *
+     * @param string $keyId
+     * @return GpgKey
+     */
+    public function setKeyId($keyId)
+    {
+        $this->keyId = $keyId;
 
         return $this;
     }

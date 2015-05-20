@@ -97,6 +97,7 @@ class KeyFactory implements KeyFactoryInterface
                     //create a new $currentKey for every new "pub" line
                     $currentKey = new GpgKey(Key::TYPE_PUB);
                     $keyId = $keyStringCols[4];
+                    $currentKey->setKeyId($keyId);
                     $armoredKey = $this->gnupgService->export($keyId);
                     $currentKey->setContent($armoredKey);
 
