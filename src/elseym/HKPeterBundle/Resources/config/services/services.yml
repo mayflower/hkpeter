@@ -12,10 +12,10 @@ services:
     private: true
     lazy: true
     calls:
-      - [ setGnupgBin, [ %hkpeter.gnupg_cli.bin% ] ]
-      - [ setGnupgHomedir, [ %hkpeter.gnupg_cli.homedir% ] ]
-      - [ setGnupgArgs, [ %hkpeter.gnupg_cli.args% ] ]
       - [ setFilesystem, [ @filesystem ] ]
+      - [ setGnupgBin, [ %hkpeter.gnupg_cli.bin% ] ]
+      - [ setGnupgArgs, [ %hkpeter.gnupg_cli.args% ] ]
+      - [ setGnupgHomedir, [ %hkpeter.gnupg_cli.homedir% ] ]
 
   hkpeter.service.pgpdump_cli:
     class: %hkpeter.service.pgpdump_cli.class%

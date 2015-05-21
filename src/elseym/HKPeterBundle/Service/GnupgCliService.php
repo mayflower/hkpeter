@@ -122,7 +122,7 @@ class GnupgCliService implements GnupgServiceInterface
     private function resolvePath($path)
     {
         if (($name = realpath($path))
-            && is_dir($name)
+            && $this->fs->exists($name)
         ) {
             return $name;
         }
@@ -139,15 +139,15 @@ class GnupgCliService implements GnupgServiceInterface
      */
     private function createSandboxDir($path, $prefix = "")
     {
-        if (($name = tempnam($path, $prefix))
-            && is_file($name)
-            && unlink($name)
-            && mkdir($name, 0600)
-        ) {
-            return $name;
+        $name = rtrim($path, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $name .= uniqid($prefix);
+
+        $this->fs->mkdir($name);
+        if (!$this->fs->exists($name)) {
+            throw new \RuntimeException("Could not write at path '$path'!");
         }
 
-        throw new \RuntimeException("Could not write at path '$path'!");
+        return $name;
     }
 
     /**
