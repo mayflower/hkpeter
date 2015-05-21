@@ -10,6 +10,7 @@ services:
   hkpeter.service.gnupg_cli:
     class: %hkpeter.service.gnupg_cli.class%
     private: true
+    lazy: true
     calls:
       - [ setGnupgBin, [ %hkpeter.gnupg_cli.bin% ] ]
       - [ setGnupgHomedir, [ %hkpeter.gnupg_cli.homedir% ] ]
