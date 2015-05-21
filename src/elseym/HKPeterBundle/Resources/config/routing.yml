@@ -9,7 +9,3 @@ hp_portal_get:
 hp_portal_post:
   path: /keys
   defaults: { _controller: hkpeter.controller.portal:addAction }
-
-hp_portal_foo:
-  path: /foo
-  defaults: { _controller: hkpeter.controller.portal:fooAction }

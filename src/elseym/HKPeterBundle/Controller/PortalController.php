@@ -3,15 +3,10 @@
 namespace elseym\HKPeterBundle\Controller;
 
 use elseym\HKPeterBundle\Factory\KeyFactoryInterface;
-use elseym\HKPeterBundle\Model\Key;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
-use Symfony\Component\Form\Form;
 use Symfony\Component\Form\FormFactory;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class PortalController
@@ -19,13 +14,7 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
  */
 class PortalController extends AbstractController
 {
-    /** @var EngineInterface $templating */
-    private $templating;
-
-    /** @var Session $session */
-    private $session;
-
-    /** @var FormFactory $formFactory  */
+    /** @var FormFactory $formFactory */
     private $formFactory;
 
     /** @var KeyFactoryInterface */
@@ -37,26 +26,24 @@ class PortalController extends AbstractController
      */
     public function portalAction(Request $request)
     {
-        $keys = $this->keyRepository->findBy(['count' => $request->get('count', 42)]);
-        return $this->templating->renderResponse("elseymHKPeterBundle:portal:index.html.twig", ['keys' => $keys]);
+        $keys = $this->keyRepository->findBy();
+        return $this->render("portal:index", ["keys" => $keys]);
     }
 
     /**
      * @param Request $request
-     * @param $fingerprint
+     * @param string $fingerprint
      * @return Response
+     * @throws NotFoundHttpException
      */
     public function getAction(Request $request, $fingerprint)
     {
-        $keys = $this->keyRepository->findBy(['fingerprint' => $fingerprint]);
-        return $this->templating->renderResponse("elseymHKPeterBundle:portal:get.html.twig", ['key' => reset($keys)]);
-    }
+        $keys = $this->keyRepository->findBy(["fingerprint" => $fingerprint]);
+        if (1 > count($keys)) {
+            throw new NotFoundHttpException("Key not found!");
+        }
 
-    public function fooAction(Request $request)
-    {
-        $keyString = "pub   2048R/E5C020D2 2013-02-14\nuid                  Simon Waibl <simon.waibl@mayflower.de>\nsub   2048R/3B4C66FF 2013-02-14\n";
-        $key = Key::createFromString($keyString);
-
+        return $this->render("portal:get", ["key" => $keys[0]]);
     }
 
     /**
@@ -66,46 +53,38 @@ class PortalController extends AbstractController
     public function addAction(Request $request)
     {
         $addForm = $this->formFactory->create('add_key');
-        if ($request->isMethod('POST')) {
-            $addForm->handleRequest($request);
-            if ($addForm->isValid()) {
-                $armoredKey = $addForm->get('armoredKey')->getData();
-                if (null !== $armoredKey) {
-                    $gpgKeys = $this->keyRepository->add($armoredKey);
-                    if ($gpgKeys) {
-                        $this->session->getFlashBag()->add('success', 'added key successfully');
+        if ($request->isMethod('POST')
+            && $addForm->handleRequest($request)->isValid()
+        ) {
+            $armoredKey = $addForm->get('armoredKey')->getData();
+            if (1 > strlen($armoredKey)) {
+                $this->addFlashMessage("Please submit some data.", self::MESSAGE_TYPE_ERROR);
+            }
 
-                        return new RedirectResponse($this->router->generate('hp_portal'));
-                    } else {
-                        $this->session->getFlashBag()->add('error', 'invalid key');
-                    }
-                } else {
-                    $this->session->getFlashBag()->add('error', 'no key given');
-                }
+            $addedKeys = $this->keyRepository->add($armoredKey);
+            $amount = count($addedKeys);
+            if (1 > $amount) {
+                $this->addFlashMessage("Please submit valid data.", self::MESSAGE_TYPE_ERROR);
+            }
+
+            if (!$this->hasFlashMessages(self::MESSAGE_TYPE_ERROR)) {
+                $this->addFlashMessage(
+                    "Successfully added $amount key" . ($amount != 1 ? "s" : "") . ".",
+                    self::MESSAGE_TYPE_SUCCESS
+                );
+
+                return $this->redirect("hp_portal");
             }
         }
 
-        return $this->templating->renderResponse('elseymHKPeterBundle:portal:add.html.twig', array(
-            'form' => $addForm->createView(),
-        ));
-    }
-
-    /**
-     * @param EngineInterface $templating
-     * @return $this
-     */
-    public function setTemplating($templating)
-    {
-        $this->templating = $templating;
-
-        return $this;
+        return $this->render("portal:add", ['form' => $addForm->createView()]);
     }
 
     /**
      * @param FormFactory $formFactory
      * @return $this
      */
-    public function setFormFactory($formFactory)
+    public function setFormFactory(FormFactory $formFactory)
     {
         $this->formFactory = $formFactory;
 
@@ -113,20 +92,10 @@ class PortalController extends AbstractController
     }
 
     /**
-     * @param Session $session
+     * @param KeyFactoryInterface $keyFactory
      * @return $this
      */
-    public function setSession($session)
-    {
-        $this->session = $session;
-
-        return $this;
-    }
-
-    /**
-     * @param KeyFactoryInterface $keyFactory
-     */
-    public function setKeyFactory($keyFactory)
+    public function setKeyFactory(KeyFactoryInterface $keyFactory)
     {
         $this->keyFactory = $keyFactory;
 
