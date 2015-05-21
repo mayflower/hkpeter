@@ -5,8 +5,6 @@ vhost: hkpeter.dev
 box_name: mayflower/trusty64-puppet3
 ip: 192.168.74.92
 
-profile::database::mysql: false
-profile::database::redis: true
 profile::webserver::php: true
 profile::javascript::nodejs: true
 profile::frontend::bower: true
