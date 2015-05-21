@@ -2,7 +2,7 @@
 
 namespace elseym\HKPeterBundle\Service;
 
-use Symfony\Component\Finder\Finder;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -18,18 +18,36 @@ class GnupgCliService implements GnupgServiceInterface
     /** @var string $gnupgHomeDir */
     private $gnupgHomeDir;
 
+    /** @var string $gnupgBaseDir */
+    private $gnupgBaseDir;
+
     /** @var array $gnupgArgs */
     private $gnupgArgs = [];
 
-    /** @var bool $implicitPurge */
-    private $implicitPurge = true;
+    /** @var bool $sandboxed */
+    private $sandboxed = true;
+
+    /** @var Filesystem $fs */
+    private $fs;
 
     /**
-     * @param bool $implicitPurge
+     * @param bool $sandboxed
      */
-    function __construct($implicitPurge = true)
+    function __construct($sandboxed = true)
     {
-        $this->implicitPurge = $implicitPurge;
+        $this->sandboxed = $sandboxed;
+    }
+
+    /**
+     * removes the sandbox, if any
+     */
+    public function __destruct()
+    {
+        if ($this->sandboxed
+            && $this->gnupgBaseDir !== $this->gnupgHomeDir
+        ) {
+            $this->fs->remove($this->gnupgHomeDir);
+        }
     }
 
     /**
@@ -40,8 +58,7 @@ class GnupgCliService implements GnupgServiceInterface
     {
         return $this
             ->execute('--armor --export', $keyId)
-            ->getOutput()
-        ;
+            ->getOutput();
     }
 
     /**
@@ -73,21 +90,7 @@ class GnupgCliService implements GnupgServiceInterface
                 "--list-keys --with-colons --with-fingerprint --with-fingerprint --fixed-list-mode " .
                 escapeshellarg($keyId)
             )
-            ->getOutput()
-        ;
-    }
-
-    /**
-     * removes gpg databases from gpg homedir
-     *
-     * @return void
-     */
-    public function purge()
-    {
-        $gpgFiles = (new Finder())->files()->in($this->gnupgHomeDir)->name("*.gpg*");
-        foreach ($gpgFiles as $pgpFile) {
-            unlink($pgpFile->getPathname());
-        }
+            ->getOutput();
     }
 
     /**
@@ -98,19 +101,53 @@ class GnupgCliService implements GnupgServiceInterface
      */
     private function execute($args = "", $input = null)
     {
-        $proc = new Process(
-            join(" ", [$this->gnupgBin, $this->gnupgArgs, $args])
-        );
-
-        if (null !== $input) {
-            $proc->setInput($input);
-        }
-
         try {
-            return $proc->mustRun();
+            return (new Process(
+                join(" ", [$this->gnupgBin, $this->gnupgArgs, "--homedir", escapeshellarg($this->gnupgHomeDir), $args]),
+                $this->gnupgHomeDir,
+                null,
+                $input
+            ))->mustRun();
         } catch (ProcessFailedException $e) {
             throw $e;
         }
+    }
+
+    /**
+     * canonicalises the path and checks for existence
+     *
+     * @param string $path
+     * @return string
+     */
+    private function resolvePath($path)
+    {
+        if (($name = realpath($path))
+            && is_dir($name)
+        ) {
+            return $name;
+        }
+
+        throw new \RuntimeException("'$name' ('$path') is not a directory!");
+    }
+
+    /**
+     * creates a directory with a random, unique name within the specified path
+     *
+     * @param string $path the absolute or relative path to where the directory should be created
+     * @param string $prefix a string to prepend to the new directory name
+     * @return string the full path to the newly created directory
+     */
+    private function createSandboxDir($path, $prefix = "")
+    {
+        if (($name = tempnam($path, $prefix))
+            && is_file($name)
+            && unlink($name)
+            && mkdir($name, 0600)
+        ) {
+            return $name;
+        }
+
+        throw new \RuntimeException("Could not write at path '$path'!");
     }
 
     /**
@@ -129,12 +166,13 @@ class GnupgCliService implements GnupgServiceInterface
      */
     public function setGnupgHomedir($gnupgHomeDir)
     {
-        $homedir = realpath($gnupgHomeDir);
-        if (false === $homedir || !is_dir($homedir)) {
-            throw new \LogicException("'$homedir' ('$gnupgHomeDir') is not a directory!");
+        $this->gnupgBaseDir = $this->resolvePath($gnupgHomeDir);
+        $this->gnupgHomeDir = $this->gnupgBaseDir;
+
+        if ($this->sandboxed) {
+            $this->gnupgHomeDir = $this->createSandboxDir($this->gnupgBaseDir);
         }
 
-        $this->gnupgHomeDir = $homedir;
         return $this;
     }
 
@@ -145,6 +183,18 @@ class GnupgCliService implements GnupgServiceInterface
     public function setGnupgArgs($gnupgArgs)
     {
         $this->gnupgArgs = $gnupgArgs;
+
+        return $this;
+    }
+
+    /**
+     * @param Filesystem $filesystem
+     * @return $this
+     */
+    public function setFilesystem(Filesystem $filesystem)
+    {
+        $this->fs = $filesystem;
+
         return $this;
     }
 }

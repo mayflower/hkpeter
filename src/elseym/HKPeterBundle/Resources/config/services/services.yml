@@ -14,6 +14,7 @@ services:
       - [ setGnupgBin, [ %hkpeter.gnupg_cli.bin% ] ]
       - [ setGnupgHomedir, [ %hkpeter.gnupg_cli.homedir% ] ]
       - [ setGnupgArgs, [ %hkpeter.gnupg_cli.args% ] ]
+      - [ setFilesystem, [ @filesystem ] ]
 
   hkpeter.service.pgpdump_cli:
     class: %hkpeter.service.pgpdump_cli.class%
