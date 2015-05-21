@@ -101,16 +101,20 @@ class GnupgCliService implements GnupgServiceInterface
      */
     private function execute($args = "", $input = null)
     {
+        $process = new Process(
+            join(" ", [$this->gnupgBin, $this->gnupgArgs, "--homedir", escapeshellarg($this->gnupgHomeDir), $args]),
+            $this->gnupgHomeDir,
+            null,
+            $input
+        );
+
         try {
-            return (new Process(
-                join(" ", [$this->gnupgBin, $this->gnupgArgs, "--homedir", escapeshellarg($this->gnupgHomeDir), $args]),
-                $this->gnupgHomeDir,
-                null,
-                $input
-            ))->mustRun();
+            $process->run();
         } catch (ProcessFailedException $e) {
             throw $e;
         }
+
+        return $process;
     }
 
     /**
