@@ -14,7 +14,11 @@
             {% for key in keys %}
                 <tr>
                     <td>{{ key.id }}</td>
-                    <td>{{ key.email }}</td>
+                    <td>
+                        {% for userId in key.userIds %}
+                            {{ userId.email }}{% if not loop.first %}, {% endif %}
+                        {% endfor %}
+                    </td>
                     <td>{{ key.fingerprint }}</td>
                     <td data-sort-value="{{ key.id }}">
                         <a href="{{ path("hp_portal_get", { "fingerprint": key.fingerprint }) }}" class="btn btn-primary btn-xs"><i class="fa fa-cloud-download"></i> download</a>
