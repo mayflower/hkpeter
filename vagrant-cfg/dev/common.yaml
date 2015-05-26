@@ -13,7 +13,7 @@ nginx::config::http_cfg_append:
   fastcgi_read_timeout: 6000s
 
 # skip the waiting...
-apt::always_apt_update: false
+apt::always_apt_update: true
 
 # adds some convenience for `vagrant ssh`
 component::shellrc::exports:

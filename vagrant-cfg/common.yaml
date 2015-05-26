@@ -15,12 +15,24 @@ profile::frontend::coffee_script: true
 profile::frontend::grunt: true
 profile::app::symfony2: true
 
+profile::database::mysql: true
+
+mysql::server::root_password: hk
+component::mysql::databases:
+  hk:
+    user: hk
+    password: hk
+    host: localhost
+    grant: ['ALL']
+
+
 component::symfony2::front_controller: app.php
 
 php::extensions:
   curl: {}
   json: {}
   intl: {}
+  mysql: {}
 
 php::settings:
   Date/date.timezone: Europe/Berlin
