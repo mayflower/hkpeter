@@ -33,7 +33,7 @@ class GpgKey
     /**
      * @var string
      *
-     * @ORM\Column(name="keyId", type="string", length=8)
+     * @ORM\Column(name="keyId", type="string", length=8, nullable=true)
      */
     private $keyId;
 
@@ -75,7 +75,7 @@ class GpgKey
     /**
      * @var string
      *
-     * @ORM\Column(name="content", type="text")
+     * @ORM\Column(name="content", type="text", nullable=true)
      */
     private $content;
 

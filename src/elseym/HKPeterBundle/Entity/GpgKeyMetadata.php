@@ -38,7 +38,7 @@ class GpgKeyMetadata
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateOfExpiration", type="datetime")
+     * @ORM\Column(name="dateOfExpiration", type="datetime", nullable=true)
      */
     private $dateOfExpiration;
 
@@ -52,14 +52,14 @@ class GpgKeyMetadata
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateOfRevocation", type="datetime")
+     * @ORM\Column(name="dateOfRevocation", type="datetime", nullable=true)
      */
     private $dateOfRevocation;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="dateOfDisablement", type="datetime")
+     * @ORM\Column(name="dateOfDisablement", type="datetime", nullable=true)
      */
     private $dateOfDisablement;
 
