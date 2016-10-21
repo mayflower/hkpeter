@@ -14,7 +14,7 @@ setup (dev)
 -----------
 
 - clone this repository and cd into it  
-  `git clone git@github.com:elseym/hkpeter.git && cd hkpeter`
+  `git clone git@github.com:mayflower/hkpeter.git && cd hkpeter`
 
 - bootstrap the vagrant config (don't overwrite!)  
   `./vagrant/bootstrap.sh`
